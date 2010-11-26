@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMA Semestralka", "MMA Semestralka.vcproj", "{64E7CA3B-1A60-4CED-B52E-DF12ADED33CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMA semestralka", "MMA semestralka.vcproj", "{C7B43068-8C95-46CD-A2DA-605CD0FEED7D}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -13,10 +13,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{64E7CA3B-1A60-4CED-B52E-DF12ADED33CE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{64E7CA3B-1A60-4CED-B52E-DF12ADED33CE}.Debug|Win32.Build.0 = Debug|Win32
-		{64E7CA3B-1A60-4CED-B52E-DF12ADED33CE}.Release|Win32.ActiveCfg = Release|Win32
-		{64E7CA3B-1A60-4CED-B52E-DF12ADED33CE}.Release|Win32.Build.0 = Release|Win32
+		{C7B43068-8C95-46CD-A2DA-605CD0FEED7D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C7B43068-8C95-46CD-A2DA-605CD0FEED7D}.Debug|Win32.Build.0 = Debug|Win32
+		{C7B43068-8C95-46CD-A2DA-605CD0FEED7D}.Release|Win32.ActiveCfg = Release|Win32
+		{C7B43068-8C95-46CD-A2DA-605CD0FEED7D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
