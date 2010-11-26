@@ -10,8 +10,7 @@ typedef CVector3D vec;
 
 class ParticleWorld{
 public:
-	ParticleWorld(int _count, ParticleGenerator* _generator ):
-	  count(_count),
+	ParticleWorld(ParticleGenerator* _generator ):
 	  generator(_generator){
 		
 	}
@@ -21,7 +20,7 @@ public:
 
 		printf("PWorld: [\n");
 
-		for (int i=0; i<count; i++){
+		for (int i=0; i<particles.size(); i++){
 			printf("\t");
 			particles[i].printOut();
 		}
@@ -32,18 +31,34 @@ public:
 		// erase first
 		particles.erase(particles.begin(), particles.end());
 		// fill
-		for (int i=0; i<count; i++){
+		for (int i=0; i<1; i++){
 			particles.push_back(generator->generate());
 		}
 	}
+
+	void add(int j){
+		// fill
+		for (int i=0; i<j; i++){
+			particles.push_back(generator->generate());
+		}
+	}
+
+	void addRandom(int j) {
+		// fill
+		for (int i=0; i<j; i++){
+			generator->position = vec(random(-WORLD_SIZE_2,WORLD_SIZE_2), AKrandom(5,WORLD_HEIGHT), AKrandom(-WORLD_SIZE_2,WORLD_SIZE_2));
+			particles.push_back(generator->generate());
+		}
+	}
+
 	void draw(void){
-		for (int i=0; i<particles.size(); i++){
+		for (int i=particles.size()-1; i>0; i--){
 			particles[i].draw();
 		}
 	}
 	void update(void){
 		for (int i=0; i<particles.size(); i++){
-			if (particles[i].life<=0 || particles[i].position[Y]<0){
+			if (particles[i].position[Y]<0){ //particles[i].life<=0 || 
 				// delete particle
 				particles.erase(particles.begin()+i, particles.begin()+i+1);
 				i--;
@@ -52,7 +67,6 @@ public:
 			particles[i].update();
 		}
 	}
-	int count;
 	vec position;
 	ParticleGenerator * generator;
 	std::vector<Particle> particles;
