@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="MMA Semestralka"
-	ProjectGUID="{64E7CA3B-1A60-4CED-B52E-DF12ADED33CE}"
-	RootNamespace="MMASemestralka"
+	Name="MMA semestralka"
+	ProjectGUID="{C7B43068-8C95-46CD-A2DA-605CD0FEED7D}"
+	RootNamespace="MMAsemestralka"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA Semestralka\glut\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\include&quot;;&quot;C:\_SKOLA\MAGISTR OI PGI\3. semestr\MMA\semestralka\MMA semestralka\glut\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA Semestralka\glut\lib&quot;"
+				AdditionalLibraryDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\lib&quot;;&quot;C:\_SKOLA\MAGISTR OI PGI\3. semestr\MMA\semestralka\MMA semestralka\glut\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -116,6 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -135,6 +136,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -260,10 +262,6 @@
 			</File>
 			<File
 				RelativePath=".\physics.h"
-				>
-			</File>
-			<File
-				RelativePath=".\resource.h"
 				>
 			</File>
 			<File

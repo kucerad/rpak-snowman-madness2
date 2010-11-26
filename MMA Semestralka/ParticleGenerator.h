@@ -20,7 +20,7 @@ public:
 		
 	}
 	~ParticleGenerator(){}
-	
+
 	vec position;
 	vec direction;
 	virtual Particle generate(void){

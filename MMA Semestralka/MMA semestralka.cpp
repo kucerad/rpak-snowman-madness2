@@ -8,11 +8,14 @@
 #include "image.h"
 #include "TextureLoader.h"
 
+//id textur
+GLuint textureIDs[10];
+
 #include "ParticleWorld.h"
 #include "ParticleGenerator.h"
 #include <time.h>
 ParticleGenerator	pGen(vec(-2,2,0), vec(0,1,0));
-ParticleWorld		pWorld(10, &pGen);
+ParticleWorld		pWorld(&pGen);
 
 #include "Snehulak.h"
 std::vector<Snehulak> snehulaci;
@@ -21,8 +24,8 @@ std::vector<Snehulak> snehulaci;
 std::vector<Koule> snehoveKoule;
 std::vector<Koule> kolize;
 
-#define WIDTH 640 // sirka okna
-#define HEIGHT 480 // vyska okna
+#define WIDTH 800 // sirka okna
+#define HEIGHT 680 // vyska okna
 
 #define SMALL_ANGLE2 1.0 //konstanta maleho uhlu
 double delka_kroku; //delka kroku
@@ -70,9 +73,6 @@ GLint zemePlaneSubDiv = 30; // rozdeleni
 #define PANEL_SIZE_Y 2
 static float whichFrame = 6;
 
-//id textur
-GLuint textureIDs[6+3+3];
-
 //nacita konfiguracni soubor
 void nactiSoubor(){
 	FILE * fr;
@@ -109,7 +109,7 @@ void initTextures() {
  CTextureLoader *textureLoader = new CTextureLoader();
  CImage *image = new CImage();
 
-	glGenTextures(9, textureIDs);
+	glGenTextures(10, textureIDs);
 
 	if (textureLoader->Load("data/iceflow_front.tga", image) != false) {
 		setTexture(textureIDs[0], image);
@@ -142,6 +142,10 @@ void initTextures() {
 		if (textureLoader->Load(filename, image) != false) {
 			setTexture(textureIDs[5+i], image);
 		}
+	}
+
+	if (textureLoader->Load("data/snowflake.tga", image) != false) {
+		setTexture(textureIDs[9], image);
 	}
   delete image;
   delete textureLoader;
@@ -489,6 +493,8 @@ void Idle(void) {
 	if(whichFrame >= 9) {whichFrame = 6;}
 	whichFrame+=0.005;
 
+	pWorld.addRandom(5);
+
 	// update particle worlds
 	pWorld.update();
 
@@ -530,7 +536,6 @@ void Display(void) {
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-
   
   smerPohledu[0] = cos(uhelPohledu*DEG_TO_RAD)*cos(beta*DEG_TO_RAD);
   smerPohledu[1] = sin(beta*DEG_TO_RAD);
@@ -575,12 +580,13 @@ void Display(void) {
   for(int i=0; i<kolize.size(); i++) {
 	  kolize[i].vykreslit2();
   }
-  
-  // draw particle worlds
-  pWorld.draw();
 
   // draw scene graph
   rootNode_p->Update();
+
+  // draw particle worlds
+  pWorld.draw();
+  
   glutSwapBuffers(); 
 }
 
@@ -814,7 +820,7 @@ COBJNode *bench = new COBJNode(); // LAVICKA
 	bench1_p->AddChildNode(bench);
 	rootNode_p->AddChildNode(bench1_p);
 
-COBJNode *strom = new COBJNode(); // PALM
+COBJNode *strom = new COBJNode(); // STROM
 	strom->Load(STROM_FILE_NAME);
 
 	CTransformNode * strom_p1 = new CTransformNode();

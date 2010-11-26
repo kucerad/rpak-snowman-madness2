@@ -75,7 +75,7 @@ public:
 			if (snehulaci[i].koliduje(pozice, polomer)) {
 				// create particle world...
 				pGen.position = pozice;
-				pWorld.init();
+				pWorld.add(10);
 
 				double v = random(5,15);
 				double u = random(0,360);

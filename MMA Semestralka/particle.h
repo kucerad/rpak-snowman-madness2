@@ -34,9 +34,9 @@ public:
 		printf("P[%f, %f, %f] speed[%f, %f, %f]\n", position[X], position[Y], position[Z], speed[X], speed[Y], speed[Z]);
 	}
 	void update(void){
-		if (life<0){
-			return;
-		}
+		//if (life<0){
+		//	return;
+		//}
 		life--;
 
 		// celkova rychlost v prostredi
@@ -100,30 +100,36 @@ public:
 		}
 		double s2(size/2);
 
-		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[4]);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[4]);
-		glMaterialfv(GL_FRONT, GL_SPECULAR, specular[4]);
-		glMaterialf(GL_FRONT, GL_SHININESS, shininess[4]);
-		
+		//glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[4]);
+		//glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[4]);
+		//glMaterialfv(GL_FRONT, GL_SPECULAR, specular[4]);
+		//glMaterialf(GL_FRONT, GL_SHININESS, shininess[4]);
+		//
 		glPushMatrix();
-			//glLoadIdentity();
-			glEnable(GL_LIGHTING);
+			//glEnable(GL_LIGHTING);
+				glEnable(GL_TEXTURE_2D);
+				// povoleni michani barev
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_ONE, GL_ONE);
 				glTranslated(position[X],position[Y],position[Z]);
 				//glRotated(angle, axis[X], axis[Y], axis[Z]);
+				glBindTexture(GL_TEXTURE_2D, textureIDs[9]);
 				glBegin(GL_QUADS);
-				  //glTexCoord2f(0.0, 0.0);
+				  glTexCoord2f(0.0, 0.0);
 				  glVertex3d(-s2, 0.0, -s2);
   				  
-				  //glTexCoord2f(1.0, 0.0);
+				  glTexCoord2f(1.0, 0.0);
 				  glVertex3d(s2, 0.0, -s2);
 				  
-				  //glTexCoord2f(1.0, 1.0);
+				  glTexCoord2f(1.0, 1.0);
 				  glVertex3d(s2, 0.0, s2);
 				  
-				  //glTexCoord2f(0.0, 1.0);
+				  glTexCoord2f(0.0, 1.0);
 				  glVertex3d(-s2, 0.0, s2);
 				glEnd();
-			glDisable(GL_LIGHTING);
+			glDisable(GL_BLEND);
+			glDisable(GL_TEXTURE_2D);
+			//glDisable(GL_LIGHTING);
 		glPopMatrix();
 	}
 
