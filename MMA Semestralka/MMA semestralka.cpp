@@ -38,6 +38,7 @@ double sunAngleSpeed; //uhel udavajici rychlost obehu slunce
 bool posvit = false; //kdyz true, tak bude svitit baterka
 bool slunceSviti = true; //kdyz true, tak bude svitit slunce
 bool zamlzeno = false; //kdyz true, bude husta mlha
+bool snezi = true;
 bool jedna = true;
 bool dva = true;
 bool dopredu = false;
@@ -425,6 +426,11 @@ void statickyPohled2(void) {
 	beta=-30.0;
 }
 
+//vypne nebo zapne snezeni
+void prepniSnezeni(void) {
+	snezi = !snezi;
+}
+
 //vypne nebo zapne walkmode
 void prepniWalkmode(void) { 
 	walkmode=!walkmode;
@@ -493,10 +499,12 @@ void Idle(void) {
 	if(whichFrame >= 9) {whichFrame = 6;}
 	whichFrame+=0.005;
 
-	pWorld.addRandom(5);
+	if (snezi) {
+		pWorld.addRandom(5);
 
-	// update particle worlds
-	pWorld.update();
+		// update particle worlds
+		pWorld.update();
+	}
 
 	for(int i=0; i<snehoveKoule.size(); i++) {
 	  snehoveKoule[i].update();
@@ -584,8 +592,10 @@ void Display(void) {
   // draw scene graph
   rootNode_p->Update();
 
-  // draw particle worlds
-  pWorld.draw();
+  if (snezi) {
+	// draw particle worlds
+	pWorld.draw();
+  }
   
   glutSwapBuffers(); 
 }
@@ -711,6 +721,10 @@ void myKeyboard (unsigned char key, int x, int y) {
 	case 'm': 
 	case 'M':
 		prepniMlhu();
+      break;
+	case 'n': 
+	case 'N':
+		prepniSnezeni();
       break;
 	case 32: 
 		hodKouli();
