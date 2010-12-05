@@ -38,7 +38,7 @@ public:
 		glPushMatrix();
 		glEnable(GL_LIGHTING);
 		glTranslated(pozice[0],pozice[1],pozice[2]);
-		glutSolidSphere(polomer, 25, 25);
+		glutSolidSphere(polomer*0.3, 25, 25);
 		glDisable(GL_LIGHTING);
 
 		glPopMatrix();
@@ -75,7 +75,7 @@ public:
 			if (snehulaci[i].koliduje(pozice, polomer)) {
 				// create particle world...
 				pGen.position = pozice;
-				pWorld.add(10);
+				pWorld.add(1);
 
 				double v = random(5,15);
 				double u = random(0,360);

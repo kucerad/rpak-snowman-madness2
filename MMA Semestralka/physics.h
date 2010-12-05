@@ -13,8 +13,7 @@
 
 // nastaveni fyziky
 CVector3D	GRAVITACE(0.0, -9.81, 0.0);
-//CVector3D	VITR(-0.02,0.1,0.5);
-CVector3D	VITR(15.0,0.0,0.0);
+CVector3D	VITR(1.0,0.0,-5.0);
 double		HUSTOTA_PROSTREDI = 0.6;
 double		KOEF_ODPORU = 0.9;
 double		KOEF_TRENI = 0.5;

@@ -245,8 +245,20 @@ void kresliPlochu(void) {
 		glBegin(GL_TRIANGLE_STRIP); 
 		px = -size/2;
 			for(int x=0; x<subDiv+1; x++) {
-				if (jedna) {glTexCoord2d(1,1); jedna = !jedna;} else {glTexCoord2d(1,0); jedna = !jedna;} glVertex3f(px, ZEME, pz); 
-				if (dva) {glTexCoord2d(0,1); dva = !dva;} else {glTexCoord2d(0,0); dva = !dva;} glVertex3f(px, ZEME, pz+dz); 
+				if (jedna) {
+					glTexCoord2d(0,1);
+				} else {
+					glTexCoord2d(1,1);
+				} 
+				glVertex3f(px, ZEME, pz); 
+				if (dva) {
+					glTexCoord2d(1,0);
+				} else {
+					glTexCoord2d(0,0);
+				} 
+				glVertex3f(px, ZEME, pz+dz); 
+				jedna = !jedna;
+				dva = !dva;
 				px += dz;
 			}
 		glEnd();
@@ -499,6 +511,11 @@ void Idle(void) {
 	
 	if(whichFrame >= 9) {whichFrame = 6;}
 	whichFrame+=0.005;
+
+		double u = random(-2,2);
+		double v = random(-2,2);
+		CVector3D poz(u,(u+v)*0.1,v);
+	VITR += poz;
 
 	if (snezi) {
 		// 
@@ -788,7 +805,7 @@ void myMotion(int x, int y)	{
 
 //inicializace pøi startu
 void init(void) {
-	printf("timer: %f", timer.RealTime());
+	//printf("timer: %f", timer.RealTime());
 
 	srand(time(NULL));	
 	pWorld.init();
