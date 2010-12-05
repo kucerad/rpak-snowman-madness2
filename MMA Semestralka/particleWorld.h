@@ -46,7 +46,7 @@ public:
 	void addRandom(int j) {
 		// fill
 		for (int i=0; i<j; i++){
-			generator->position = vec(random(-WORLD_SIZE_2,WORLD_SIZE_2), AKrandom(5,WORLD_HEIGHT), AKrandom(-WORLD_SIZE_2,WORLD_SIZE_2));
+			generator->position = vec(random(-WORLD_SIZE_2,WORLD_SIZE_2), AKrandom(8,WORLD_HEIGHT), AKrandom(-WORLD_SIZE_2,WORLD_SIZE_2));
 			particles.push_back(generator->generate());
 		}
 	}
@@ -56,7 +56,7 @@ public:
 			particles[i].draw();
 		}
 	}
-	void update(void){
+	void update(double time){
 		for (int i=0; i<particles.size(); i++){
 			if (particles[i].position[Y]<0){ //particles[i].life<=0 || 
 				// delete particle
@@ -64,7 +64,7 @@ public:
 				i--;
 				continue;
 			} 
-			particles[i].update();
+			particles[i].update(time);
 		}
 	}
 	vec position;
