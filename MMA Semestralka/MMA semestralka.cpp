@@ -14,7 +14,7 @@ GLuint textureIDs[10];
 #include "ParticleWorld.h"
 #include "ParticleGenerator.h"
 #include <time.h>
-ParticleGenerator	pGen(vec(-2,2,0), vec(0,1,0));
+ParticleGenerator	pGen(vec(0,5,2), vec(0,1,0));
 ParticleWorld		pWorld(&pGen);
 
 #include "Snehulak.h"
@@ -493,6 +493,7 @@ void Reshape(int w, int h) {
 }
 
 void Idle(void) {
+
 	sunAngle += sunAngleSpeed; //uhel pro obeh slunce
 	if(sunAngle > 180.0) sunAngle = 0.0;
 	
@@ -500,16 +501,19 @@ void Idle(void) {
 	whichFrame+=0.005;
 
 	if (snezi) {
-		pWorld.addRandom(5);
+		// 
+		pWorld.addRandom(1);
 
 		// update particle worlds
-		pWorld.update();
+		pWorld.update(timer.RealTime());
 	}
 
 	for(int i=0; i<snehoveKoule.size(); i++) {
 	  snehoveKoule[i].update();
 	  if (snehoveKoule[i].koliduje()) {
 
+		  //pWorld.addRandom(1);
+		  
 		  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, snehoveKoule[i].polomer);
 		  kolize.push_back(k);
 		  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
@@ -784,8 +788,10 @@ void myMotion(int x, int y)	{
 
 //inicializace pøi startu
 void init(void) {
+	printf("timer: %f", timer.RealTime());
+
 	srand(time(NULL));	
-	//pWorld.init();
+	pWorld.init();
 	//pWorld.printOut();
 	
 	nactiSoubor();

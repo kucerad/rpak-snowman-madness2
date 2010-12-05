@@ -32,7 +32,8 @@ public:
 		vec dir(a, b, c);
 		
 		double speed = AKrandom(1,2);
-		Particle p(position, Normalize(dir)*speed, vec(1,0,0), 0, vec(0,1,0), 0);
+		
+		Particle p(position, Normalize(dir)*speed, vec(1,0,0), 0, vec(0,1,0), 0, timer.RealTime());
 		
 		return p;
 		

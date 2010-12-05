@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\include&quot;;&quot;C:\_SKOLA\MAGISTR OI PGI\3. semestr\MMA\semestralka\MMA semestralka\glut\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\include&quot;;&quot;C:\_SKOLA\MAGISTR OI PGI\3. semestr\MMA\semestralka2\glut\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\lib&quot;;&quot;C:\_SKOLA\MAGISTR OI PGI\3. semestr\MMA\semestralka\MMA semestralka\glut\lib&quot;"
+				AdditionalLibraryDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\lib&quot;;&quot;C:\_SKOLA\MAGISTR OI PGI\3. semestr\MMA\semestralka2\glut\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -116,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\include&quot;;&quot;C:\_SKOLA\MAGISTR OI PGI\3. semestr\MMA\semestralka2\glut\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -136,7 +136,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\lib&quot;"
+				AdditionalLibraryDirectories="&quot;C:\Users\Roman\Desktop\A4M39MMA\Semestralka\MMA semestralka\glut\lib&quot;;&quot;C:\_SKOLA\MAGISTR OI PGI\3. semestr\MMA\semestralka2\glut\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
