@@ -30,6 +30,38 @@ public:
 	}
 
 	void vykreslit2() {
+
+		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[19]);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[19]);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, specular[19]);
+		glMaterialf(GL_FRONT, GL_SHININESS, shininess[19]);
+
+		glPushMatrix();
+		glEnable(GL_LIGHTING);
+		glTranslated(pozice[0],pozice[1],pozice[2]);
+		//glutSolidSphere(polomer, 25, 25);
+		glDisable(GL_LIGHTING);
+		glPopMatrix();
+
+		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[16]);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[16]);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, specular[16]);
+		glMaterialf(GL_FRONT, GL_SHININESS, shininess[16]);
+
+		glPushMatrix();
+		glEnable(GL_LIGHTING);
+		glTranslated(pozice[0],0,pozice[2]);
+		glutSolidSphere(polomer*0.7, 25, 25);
+		glTranslated((pozice[1]-2)/4,0,0);
+		glutSolidSphere(polomer*0.4, 25, 25);
+		glTranslated(-(pozice[1]-2)/3,0,(pozice[1]-3)/3);
+		glutSolidSphere(polomer*0.5, 25, 25);
+		glDisable(GL_LIGHTING);
+
+		glPopMatrix();
+	}
+
+	void vykreslit3() {
 		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[19]);
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[19]);
 		glMaterialfv(GL_FRONT, GL_SPECULAR, specular[19]);
@@ -75,7 +107,7 @@ public:
 			if (snehulaci[i].koliduje(pozice, polomer)) {
 				// create particle world...
 				pGen.position = pozice;
-				pWorld.add(1);
+				pWorld.add(5);
 
 				double v = random(5,15);
 				double u = random(0,360);
