@@ -526,12 +526,11 @@ void Idle(void) {
 		
 		if(whichFrame >= 9) {whichFrame = 6;}
 		whichFrame+=0.005;
-
-		//zema smeru vetru
-		double u = random(-2,2);
-		double v = random(-2,2);
-		CVector3D poz(u,(u+v)*0.1,v);
+		u += random(-2,2);
+		v += random(-2,2);
+		CVector3D poz(sin(u),0.0,sin(v));
 		VITR += poz;
+
 
 		if (snezi) {
 			//pokud snezi, jsou pridany nove vlocky
