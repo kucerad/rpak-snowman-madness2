@@ -108,6 +108,7 @@ public:
 			return;
 		}
 		double s2(size/2);
+		double s3(size/4);
 
 		glPushMatrix();
 		
@@ -165,7 +166,7 @@ public:
 				glEnable(GL_TEXTURE_2D);
 				// povoleni michani barev
 				glEnable(GL_BLEND);
-				glBlendFunc(GL_ONE, GL_ONE);
+				glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
 				glBindTexture(GL_TEXTURE_2D, textureIDs[9]);
 				glBegin(GL_QUADS);
 				  glTexCoord2f(0.0, 0.0);
@@ -180,6 +181,38 @@ public:
 				  glTexCoord2f(0.0, 1.0);
 				  glVertex3d(-s2, 0.0, s2);
 				glEnd();
+
+				//glBindTexture(GL_TEXTURE_2D, textureIDs[9]);
+				//glBegin(GL_QUADS);
+				//  glTexCoord2f(0.0, 1.0);
+				//  glVertex3d(0, -s3, -s2);
+  		//		  
+				//  glTexCoord2f(0.0, 0.0);
+				//  glVertex3d(0, -s3, s2);
+				//  
+				//  glTexCoord2f(1.0, 0.0);
+				//  glVertex3d(0, s3, s2);
+				//  
+				//  glTexCoord2f(1.0, 1.0);
+				//  glVertex3d(0, s3, -s2);
+				//glEnd();
+
+				//glBindTexture(GL_TEXTURE_2D, textureIDs[9]);
+				//glBegin(GL_QUADS);
+				//  glTexCoord2f(0.0, 0.0);
+				//  glVertex3d(-s2, -s3, 0);
+  		//		  
+				//  glTexCoord2f(1.0, 0.0);
+				//  glVertex3d(s2, -s3, 0);
+				//  
+				//  glTexCoord2f(1.0, 1.0);
+				//  glVertex3d(s2, s3, 0);
+				//  
+				//  glTexCoord2f(0.0, 1.0);
+				//  glVertex3d(-s2, s3, 0);
+				//glEnd();
+
+
 				glDisable(GL_BLEND);
 				glDisable(GL_TEXTURE_2D);
 				// draw normal...

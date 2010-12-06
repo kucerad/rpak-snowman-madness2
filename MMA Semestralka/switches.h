@@ -14,5 +14,6 @@ bool doprava = false;
 bool nahoru = false;
 bool dolu = false;
 bool debug = false; // on/off debug mode
+bool pause = false;
 
 #endif __SWITCHES_H

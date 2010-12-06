@@ -458,11 +458,6 @@ void statickyPohled2(void) {
 	beta = -30.0;
 }
 
-//vypne nebo zapne snezeni
-void prepniSnezeni(void) {
-	snezi = !snezi;
-}
-
 //vypne nebo zapne walkmode
 void prepniWalkmode(void) { 
 	walkmode=!walkmode;
@@ -524,43 +519,46 @@ void Reshape(int w, int h) {
 }
 
 void Idle(void) {
-	sunAngle += sunAngleSpeed; //posune slunce
-	if(sunAngle > 180.0) sunAngle = 0.0;
-	
-	if(whichFrame >= 9) {whichFrame = 6;}
-	whichFrame+=0.005;
 
-	//zema smeru vetru
-	double u = random(-2,2);
-	double v = random(-2,2);
-	CVector3D poz(u,(u+v)*0.1,v);
-	VITR += poz;
+	if (!pause) {
+		sunAngle += sunAngleSpeed; //posune slunce
+		if(sunAngle > 180.0) sunAngle = 0.0;
+		
+		if(whichFrame >= 9) {whichFrame = 6;}
+		whichFrame+=0.005;
 
-	if (snezi) {
-		//pokud snezi, jsou pridany nove vlocky
-		pWorld.addRandom(1);
-		// update particle world
-		pWorld.update(timer.RealTime());
-	}
+		//zema smeru vetru
+		double u = random(-2,2);
+		double v = random(-2,2);
+		CVector3D poz(u,(u+v)*0.1,v);
+		VITR += poz;
 
-	//kontrola zasahu snehulaku nekterou z kouli
-	for(int i=0; i<snehoveKoule.size(); i++) {
-	  snehoveKoule[i].update();
-	  if (snehoveKoule[i].koliduje()) { //pokud koliduje
-		  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, snehoveKoule[i].polomer);
-		  kolize.push_back(k);
-		  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
-	  }
-	  else if (snehoveKoule[i].jeVenku()) { //pokud opusti scenu
-		  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
-	  }
-    }
+		if (snezi) {
+			//pokud snezi, jsou pridany nove vlocky
+			pWorld.addRandom(1);
+			// update particle world
+			pWorld.update(timer.RealTime());
+		}
 
-	//posun samotnych snehulaku
-	for (int j=0; j<snehulaci.size(); j++) {
-		snehulaci[j].posun();
-		snehulaci[j].rodic->LoadIdentity();
-		snehulaci[j].rodic->Translate(snehulaci[j].pozicex,snehulaci[j].pozicey,snehulaci[j].pozicez);
+		//kontrola zasahu snehulaku nekterou z kouli
+		for(int i=0; i<snehoveKoule.size(); i++) {
+		  snehoveKoule[i].update();
+		  if (snehoveKoule[i].koliduje()) { //pokud koliduje
+			  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, snehoveKoule[i].polomer);
+			  kolize.push_back(k);
+			  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
+		  }
+		  else if (snehoveKoule[i].jeVenku()) { //pokud opusti scenu
+			  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
+		  }
+		}
+
+		//posun samotnych snehulaku
+		for (int j=0; j<snehulaci.size(); j++) {
+			snehulaci[j].posun();
+			snehulaci[j].rodic->LoadIdentity();
+			snehulaci[j].rodic->Translate(snehulaci[j].pozicex,snehulaci[j].pozicey,snehulaci[j].pozicez);
+		}
 	}
 
 	if (dopredu)	{posunDopredu();}
@@ -760,12 +758,15 @@ void myKeyboard (unsigned char key, int x, int y) {
       break;
 	case 'n': 
 	case 'N':
-		prepniSnezeni();
+		snezi = !snezi;
       break;
-
 	case 'b':
 	case 'B':
 		debug=!debug;
+	  break;
+	case 'p':
+	case 'P':
+		pause=!pause;
 	  break;
 	case 32: 
 		hodKouli();
@@ -994,7 +995,10 @@ void myMenu(int polozkaMenu){
 		prepniMlhu();
       break;
 	case 22:  //zapne nebo vypne snezeni
-		prepniSnezeni();
+		snezi = !snezi;
+      break;
+	case 23:  //zapne nebo vypne snezeni
+		pause = !pause;
       break;
     case 99: //ukonci aplikaci
       exit(0);
@@ -1028,6 +1032,7 @@ void menu(void) {
 	glutAddSubMenu("Svetla", menuSvetla);
 	glutAddMenuEntry("Mlha ON/OFF (m)", 21); 
 	glutAddMenuEntry("Snezeni ON/OFF (m)", 22); 
+	glutAddMenuEntry("Pause ON/OFF (m)", 23); 
 	glutAddMenuEntry("Konec", 99);
 
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
