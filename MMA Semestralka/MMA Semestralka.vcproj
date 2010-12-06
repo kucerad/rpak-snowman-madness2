@@ -273,6 +273,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\switches.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TextureLoader.h"
 				>
 			</File>

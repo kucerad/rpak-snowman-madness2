@@ -15,11 +15,15 @@ double RYCHLOST_KOULE = 0.7; //rychlost, jakou ma na pocatku vrzena koule
 
 // nastaveni fyziky
 CVector3D	GRAVITACE(0.0, -9.81, 0.0);
-CVector3D	VITR(1.0,0.0,-5.0);
+CVector3D	VITR(0.0,0.0,1.0);
 double		HUSTOTA_PROSTREDI = 0.6;
-double		KOEF_ODPORU = 0.9;
-double		KOEF_TRENI = 0.5;
+double		KOEF_ODPORU = 0.6;
+double		KOEF_TRENI = 0.3;
 double		dt = 0.001;
+double		EPSILON = 0.00000001;
+CVector3D	VEPSILON(EPSILON);
+float		PI = 3.14159265;
+float		PI_2 = PI/2;
 
 CTimer timer;
 
