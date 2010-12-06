@@ -75,22 +75,21 @@ GLint zemePlaneSubDiv = 30; // rozdeleni
 static float whichFrame = 6;
 
 void strokeOutput(char *format,...) {
- va_list args;
- char buffer[200], *p;
+	va_list args;
+	char buffer[200], *p;
 
-  va_start(args, format);
-  vsprintf(buffer, format, args);
-  va_end(args);
-
+	va_start(args, format);
+	vsprintf(buffer, format, args);
+	va_end(args);
+	  
   	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[16]);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[16]);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specular[16]);
 	glMaterialf(GL_FRONT, GL_SHININESS, shininess[16]);
-	glColor3f(0.5,1.0,1.0);
-
-  for (p = buffer; *p; p++) {
-	  glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
-  }
+	glColor3f(0.6,1,1);
+	for (p = buffer; *p; p++) {
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
+	}
 }
 
 
@@ -890,15 +889,6 @@ COBJNode *bench = new COBJNode(); // LAVICKA
 	bench1_p->AddChildNode(bench);
 	rootNode_p->AddChildNode(bench1_p);
 
-CScoreNode *score = new CScoreNode(); // SCORE
-	CTransformNode * score_p1 = new CTransformNode();
-	score_p1->Translate(-3.0, 2.0, 1.2);
-	score_p1->Rotate(90,0,1,0);
-	score_p1->Scale(0.005,0.005,0.005);
-	score_p1->AddChildNode(score);
-	rootNode_p->AddChildNode(score_p1);	
-
-
 COBJNode *strom = new COBJNode(); // STROM
 	strom->Load(STROM_FILE_NAME);
 
@@ -961,6 +951,35 @@ CSnehulakNode * sneh3 = new CSnehulakNode();
 	sneh_p3->Translate(sneh3->sn->pozicex,sneh3->sn->pozicey,sneh3->sn->pozicez);
 	sneh_p3->Rotate(10.0, 0.0, 1.0, 0.0);
 	rootNode_p->AddChildNode(sneh_p3);
+
+CScoreNode *score = new CScoreNode(); // SCORE
+	CTransformNode * score_p1 = new CTransformNode();
+	score_p1->Translate(-WORLD_SIZE_2+1, WORLD_HEIGHT/4, 7);
+	score_p1->Rotate(90,0,1,0);
+	score_p1->Scale(0.03,0.03,0.03);
+	score_p1->AddChildNode(score);
+	rootNode_p->AddChildNode(score_p1);	
+	
+	CTransformNode * score_p2 = new CTransformNode();
+	score_p2->Translate(-7, WORLD_HEIGHT/4, -WORLD_SIZE_2+1);
+	score_p2->Scale(0.03,0.03,0.03);
+	score_p2->AddChildNode(score);
+	rootNode_p->AddChildNode(score_p2);	
+	
+	CTransformNode * score_p3 = new CTransformNode();
+	score_p3->Translate(7, WORLD_HEIGHT/4, WORLD_SIZE_2-1);
+	score_p3->Rotate(180,0,1,0);
+	score_p3->Scale(0.03,0.03,0.03);
+	score_p3->AddChildNode(score);
+	rootNode_p->AddChildNode(score_p3);	
+	
+	CTransformNode * score_p4 = new CTransformNode();
+	score_p4->Translate(WORLD_SIZE_2-1, WORLD_HEIGHT/4, -7);
+	score_p4->Rotate(270,0,1,0);
+	score_p4->Scale(0.03,0.03,0.03);
+	score_p4->AddChildNode(score);
+	rootNode_p->AddChildNode(score_p4);	
+
 
 	// ostatní inicializace
 	glEnable(GL_LIGHT0);
