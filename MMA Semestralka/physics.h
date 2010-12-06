@@ -29,6 +29,7 @@ CTimer timer;
 
 int randSeed = 0;
 int r_s = 0;
+double u(0), v(0);
 
 inline double AKrandom(double min, double max){
 	
