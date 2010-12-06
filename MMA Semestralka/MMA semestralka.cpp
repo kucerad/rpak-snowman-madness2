@@ -528,9 +528,9 @@ void Idle(void) {
 		whichFrame+=0.005;
 
 		u += random(-2,2);
-		v += random(-2,2);
-		CVector3D poz(sin(u),0.0,sin(v));
-		VITR += poz;
+        v += random(-2,2);
+        CVector3D poz(5*sin(u),0.0,5*sin(v));
+        VITR = poz;
 
 
 		if (snezi) {
