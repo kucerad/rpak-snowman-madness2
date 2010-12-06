@@ -46,7 +46,7 @@ public:
 	void addRandom(int j) {
 		// fill
 		for (int i=0; i<j; i++){
-			generator->position = vec(random(-WORLD_SIZE_2,WORLD_SIZE_2), AKrandom(8,WORLD_HEIGHT), AKrandom(-WORLD_SIZE_2,WORLD_SIZE_2));
+			generator->position = vec(random(-WORLD_SIZE_2,WORLD_SIZE_2), AKrandom(3,WORLD_HEIGHT/2), AKrandom(-WORLD_SIZE_2,WORLD_SIZE_2));
 			particles.push_back(generator->generate());
 		}
 	}
