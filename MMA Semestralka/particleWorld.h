@@ -58,7 +58,7 @@ public:
 	}
 	void update(double time){
 		for (int i=0; i<particles.size(); i++){
-			if (particles[i].position[Y]<0){ //particles[i].life<=0 || 
+			if (particles[i].jeVenku()){ //particles[i].life<=0 || 
 				// delete particle
 				particles.erase(particles.begin()+i, particles.begin()+i+1);
 				i--;
