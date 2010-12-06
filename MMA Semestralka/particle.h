@@ -56,6 +56,16 @@ public:
 	void printOut(void){
 		printf("P[%f, %f, %f] speed[%f, %f, %f]\n", position[X], position[Y], position[Z], speed[X], speed[Y], speed[Z]);
 	}
+
+	bool jeVenku(void) {
+		if (position[0] < WORLD_SIZE_2 && position[0] > -WORLD_SIZE_2 && position[2] < WORLD_SIZE_2 && position[2] > -WORLD_SIZE_2 && position[1] > 0) {
+			return false;
+		}
+		else {
+			return true;	
+		}
+	}
+
 	void update(double time){
 		diffTransf.LoadIdentityMatrix();
 		double tDiff = dt;

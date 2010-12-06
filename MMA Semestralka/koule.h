@@ -51,11 +51,11 @@ public:
 		glPushMatrix();
 		glEnable(GL_LIGHTING);
 		glTranslated(pozice[0],0,pozice[2]);
-		glutSolidSphere(polomer*0.7, 25, 25);
+		glutSolidSphere(polomer*0.7, 5, 5);
 		glTranslated((pozice[1]-2)/4,0,0);
-		glutSolidSphere(polomer*0.4, 25, 25);
+		glutSolidSphere(polomer*0.4, 5, 5);
 		glTranslated(-(pozice[1]-2)/3,0,(pozice[1]-3)/3);
-		glutSolidSphere(polomer*0.5, 25, 25);
+		glutSolidSphere(polomer*0.5, 5, 5);
 		glDisable(GL_LIGHTING);
 
 		glPopMatrix();
