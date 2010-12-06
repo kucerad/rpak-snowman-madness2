@@ -61,21 +61,6 @@ public:
 		glPopMatrix();
 	}
 
-	void vykreslit3() {
-		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[19]);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[19]);
-		glMaterialfv(GL_FRONT, GL_SPECULAR, specular[19]);
-		glMaterialf(GL_FRONT, GL_SHININESS, shininess[19]);
-
-		glPushMatrix();
-		glEnable(GL_LIGHTING);
-		glTranslated(pozice[0],pozice[1],pozice[2]);
-		glutSolidSphere(polomer*0.3, 25, 25);
-		glDisable(GL_LIGHTING);
-
-		glPopMatrix();
-	}
-
 	void update(void) {
 		// SETRVACNOST
 		// F = m.a
