@@ -74,6 +74,26 @@ GLint zemePlaneSubDiv = 30; // rozdeleni
 #define PANEL_SIZE_Y 2
 static float whichFrame = 6;
 
+void strokeOutput(char *format,...) {
+ va_list args;
+ char buffer[200], *p;
+
+  va_start(args, format);
+  vsprintf(buffer, format, args);
+  va_end(args);
+
+  	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[16]);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[16]);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specular[16]);
+	glMaterialf(GL_FRONT, GL_SHININESS, shininess[16]);
+	glColor3f(0.5,1.0,1.0);
+
+  for (p = buffer; *p; p++) {
+	  glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
+  }
+}
+
+
 //nacita konfiguracni soubor
 void nactiSoubor(){
 	FILE * fr;
@@ -221,6 +241,15 @@ void skybox() {
 	glDisable(GL_LIGHTING);
 }
 
+void kresliScore(void) {
+  int score = kolize.size();
+  char sc [10] = "Score:  ";
+  sc[8] = char(score % 10 +48);
+  sc[7] = char(int(score/10) +48);
+  sc[6] = char(int(score/100) +48);
+  strokeOutput(sc);
+}
+
 //nakresli plochu z tringlestripu
 void kresliPlochu(void) {
 	glNormal3f(0.0, 1.0, 0.0);
@@ -309,6 +338,12 @@ class CZemeNode : public CGeometryNode { //vykresli zemi
 class CPodstavecNode : public CGeometryNode { 
 	void Update(void){
 		kresliPodstavu();
+	}
+};
+
+class CScoreNode : public CGeometryNode { 
+	void Update(void){
+		kresliScore();
 	}
 };
 
@@ -498,8 +533,7 @@ void Reshape(int w, int h) {
   glViewport(0, 0, w, h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(60.0, (GLfloat)w/h, 1.0, 10000);
-
+  gluPerspective(60.0, (GLfloat)w/h, 1.0, 10000);  
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
@@ -562,7 +596,6 @@ void Idle(void) {
 
 void Display(void) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   
@@ -857,6 +890,15 @@ COBJNode *bench = new COBJNode(); // LAVICKA
 	bench1_p->AddChildNode(bench);
 	rootNode_p->AddChildNode(bench1_p);
 
+CScoreNode *score = new CScoreNode(); // SCORE
+	CTransformNode * score_p1 = new CTransformNode();
+	score_p1->Translate(-3.0, 2.0, 1.2);
+	score_p1->Rotate(90,0,1,0);
+	score_p1->Scale(0.005,0.005,0.005);
+	score_p1->AddChildNode(score);
+	rootNode_p->AddChildNode(score_p1);	
+
+
 COBJNode *strom = new COBJNode(); // STROM
 	strom->Load(STROM_FILE_NAME);
 
@@ -989,6 +1031,10 @@ void initGL(void) {
   //glDepthFunc(GL_LEQUAL);
   glDepthFunc(GL_LESS);
   glShadeModel(GL_SMOOTH);
+  glEnable(GL_LINE_SMOOTH);
+
+  glLineWidth(5.0);
+
   glEnable(GL_LIGHTING); //zapne osvetleni
 }
 
