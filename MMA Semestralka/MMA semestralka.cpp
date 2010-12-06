@@ -526,6 +526,7 @@ void Idle(void) {
 		
 		if(whichFrame >= 9) {whichFrame = 6;}
 		whichFrame+=0.005;
+
 		u += random(-2,2);
 		v += random(-2,2);
 		CVector3D poz(sin(u),0.0,sin(v));
@@ -534,10 +535,12 @@ void Idle(void) {
 
 		if (snezi) {
 			//pokud snezi, jsou pridany nove vlocky
-			pWorld.addRandom(1);
+			pWorld.addRandom(2);
 			// update particle world
 			pWorld.update(timer.RealTime());
 		}
+
+		std::cout << pWorld.particles.size() <<"\n";
 
 		//kontrola zasahu snehulaku nekterou z kouli
 		for(int i=0; i<snehoveKoule.size(); i++) {
