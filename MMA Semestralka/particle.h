@@ -5,7 +5,7 @@
 
 
 // show normals and forces... DEBUG = 1
-#define DEBUG 0
+#define DEBUG 1
 
 typedef CVector3D vec;
 
@@ -49,6 +49,8 @@ public:
 	vec			Fn;
 	vec			Ft;
 	vec			S;
+	vec		Nspeed;
+	vec		Tspeed;
 	double		timeElapsed;
 
 	void printOut(void){
@@ -68,42 +70,37 @@ public:
 		S = vec( -VITR + speed );
 		
 		// zavislost na natoceni k normale
-		double	k = DotProduct(Normalize(S), normal);
+		double	k = DotProduct(S, normal);
 		// rychlost ve smeru normaly
-		vec		Nspeed( k * normal );
+		Nspeed = k * normal;
 		// rychlost v rovine vlocky
-		vec		Tspeed( S - Nspeed );
+		Tspeed = S - Nspeed;
 		double	r = Length(Nspeed);
 		// odpor vzduchu
-		Fn = Nspeed * (-0.5 * r*r*size*size*0.01*KOEF_ODPORU*HUSTOTA_PROSTREDI) ;
+		Fn = Nspeed * (-0.5 * r*r*size*size*KOEF_ODPORU*HUSTOTA_PROSTREDI) ;
 		// treni o vzduch
 		Ft = Tspeed * (- KOEF_TRENI )* HUSTOTA_PROSTREDI ;
 
 		// zrychleni
 		speed += (GRAVITACE + Fn + Ft)/mass;
 		// posun
-		//printf("tDiff:  %f\n",tDiff);
+		
 		position += speed*(tDiff);
 
 		// natocit a update normaly
 		double speedScale = Length(speed);
 			
-		// rotace...
-// TODO: harmonicka zmena rychlosti a moznost zmeny orientace; 
-			axis = Normalize(axis+CrossProduct(normal, Normalize(Ft)));
-
-			double z = sin(timeElapsed);
-			//var r:Number = Math.random()*2-1;
-			//omega +=  ( r * 0.05 + z * 0.5) / mass; 
-			double angleDiff =  (speedScale*0.5 + z * 0.1) / mass;	
-			//double angleDiff =  z ;// /mass;	
+		// rotace...		
 			
-			diffTransf.Rotate(axis[X], axis[Y], axis[Z], angleDiff);
-			
-			normal = Normalize(diffTransf * normal);
-			axis = Normalize(diffTransf * axis);
-			transf = transf*diffTransf;
-		//}
+		double z = sin(PI_2+timeElapsed*50)*5;
+		double angleDiff =  (z+Length(Ft))/mass;			
+		
+		diffTransf.Rotate(normal[X], normal[Y], normal[Z], 0.1*speedScale);
+		diffTransf.Rotate(axis[X], axis[Y], axis[Z], angleDiff);
+		
+		normal = Normalize(diffTransf * normal);
+		axis = Normalize(diffTransf * axis);
+		transf = diffTransf*transf;
 		
 	}
 	void draw(void){
@@ -112,47 +109,59 @@ public:
 		}
 		double s2(size/2);
 
-		//glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[4]);
-		//glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[4]);
-		//glMaterialfv(GL_FRONT, GL_SPECULAR, specular[4]);
-		//glMaterialf(GL_FRONT, GL_SHININESS, shininess[4]);
-		//
 		glPushMatrix();
+		
 			//glEnable(GL_LIGHTING);				
-				glTranslated(position[X],position[Y],position[Z]);
-#if DEBUG>0
+			glTranslated(position[X],position[Y],position[Z]);
+//#if DEBUG>0
+	if (debug){
+			glPushAttrib(GL_LINE_BIT);
+			glLineWidth(0.1f);
+				// rotation axis WHITE
+				double sc = 0.1;
+				glBegin(GL_LINES);
+					glColor3f(1.f, 1.f, 1.f);
+					glVertex3d(0.0, 0.0, 0.0);
+					glVertex3d(Nspeed[X]*sc, Nspeed[Y]*sc, Nspeed[Z]*sc);
+				glEnd();
+				
 				// speed in wind Force LILA
+				
 				glBegin(GL_LINES);
 					glColor3f(1.f, 0.0f, 1.f);
 					glVertex3d(0.0, 0.0, 0.0);
-					double sc = 0.1;
-					glVertex3d(S[X]*sc, S[Y]*sc, S[Z]*sc);
+					glVertex3d(Tspeed[X]*sc, Tspeed[Y]*sc, Tspeed[Z]*sc);
 				glEnd();
 				// Normal Force GREEN
+				/*
 				glBegin(GL_LINES);
 					glColor3f(0.f, 1.0f, 0.f);
 					glVertex3d(0.0, 0.0, 0.0);
-					glVertex3d(Fn[X], Fn[Y], Fn[Z]);
+					glVertex3d(Fn[X]*10, Fn[Y]*10, Fn[Z]*10);
 				glEnd();
+				*/
 				// Side Force YELLOW
+				/*
 				glBegin(GL_LINES);
 					glColor3f(1.0f, 1.0f, 0.f);
 					glVertex3d(0.0, 0.0, 0.0);
 					glVertex3d(Ft[X], Ft[Y], Ft[Z]);
 				glEnd();
+				*/
 				// Normal RED
 				glBegin(GL_LINES);
 					glColor3f(1.0f, 0.f, 0.f);
 					glVertex3d(0.0, 0.0, 0.0);
 					glVertex3d(normal[X], normal[Y], normal[Z]);
 				glEnd();
-#endif				
+			glPopAttrib();
+	}
+//#endif				
 				//glRotated(angle, axis[X], axis[Y], axis[Z]);
 				glMultMatrixd(transf._matrix);
 				
-				glColor3f(1.f,1.f, 1.f);
-				
-				
+				glColor3f(1.f,1.f, 1.f);		
+
 				glEnable(GL_TEXTURE_2D);
 				// povoleni michani barev
 				glEnable(GL_BLEND);
@@ -178,6 +187,7 @@ public:
 
 			
 			//glDisable(GL_LIGHTING);
+	
 		glPopMatrix();
 	}
 

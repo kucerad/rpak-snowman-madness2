@@ -1,4 +1,5 @@
 #include "physics.h"
+#include "switches.h"
 #include <math.h>
 #include "common.h"
 #include "SceneNode.h"
@@ -38,17 +39,6 @@ GLdouble uhelPohledu = 180.0;	//pocatecni uhel pohledu
 GLdouble beta = 0.0;			//uhel, pod kterym avatar pozoruje scenu
 GLdouble sunAngle = 90;			//pocatecni poloha/natoceni slunce
 double sunAngleSpeed;			//uhel udavajici rychlost obehu slunce
-bool posvit = false;			//kdyz true, tak bude svitit baterka
-bool slunceSviti = true;		//kdyz true, tak bude svitit slunce
-bool zamlzeno = false;			//kdyz true, bude husta mlha
-bool snezi = true;				//kdyz true, bude snezit
-
-bool dopredu = false;			//promenne pro plynuly pohyb a pohled avatara
-bool dozadu = false;
-bool doleva = false;
-bool doprava = false;
-bool nahoru = false;
-bool dolu = false;
 
 GLdouble xm[3], ym[3]; //pole pro ulozeni poloh kurzoru
 
@@ -230,12 +220,15 @@ void skybox() {
 
 //vypocte skore a prichysta pro vykresleni
 void kresliSkore(void) {
-  int score = kolize.size();
-  char sc [10] = "Score:  ";
-  sc[8] = char(score % 10 + 48);
-  sc[7] = char(int(score/10) + 48);
-  sc[6] = char(int(score/100) + 48);
-  strokeOutput(sc);
+	glPushAttrib(GL_LINE_BIT);
+	  glLineWidth(5.0);
+	  int score = kolize.size();
+	  char sc [10] = "Score:  ";
+	  sc[8] = char(score % 10 +48);
+	  sc[7] = char(int(score/10) +48);
+	  sc[6] = char(int(score/100) +48);
+	  strokeOutput(sc);
+    glPopAttrib();
 }
 
 //nakresli plochu z tringlestripu
@@ -769,6 +762,11 @@ void myKeyboard (unsigned char key, int x, int y) {
 	case 'N':
 		prepniSnezeni();
       break;
+
+	case 'b':
+	case 'B':
+		debug=!debug;
+	  break;
 	case 32: 
 		hodKouli();
       break;
@@ -1041,7 +1039,8 @@ void initGL(void) {
   glDepthFunc(GL_LESS);
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LINE_SMOOTH);
-  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHTING); //zapne osvetleni
+
 }
 
 int main(int argc, char **argv) {
