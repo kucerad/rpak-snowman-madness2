@@ -11,6 +11,8 @@
 
 #define DEG_TO_RAD (3.14159/180.0) // konstanta pro prevod stupnu na radiany
 
+double RYCHLOST_KOULE = 0.7; //rychlost, jakou ma na pocatku vrzena koule
+
 // nastaveni fyziky
 CVector3D	GRAVITACE(0.0, -9.81, 0.0);
 CVector3D	VITR(1.0,0.0,-5.0);

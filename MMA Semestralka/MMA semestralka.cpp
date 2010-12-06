@@ -24,39 +24,33 @@ std::vector<Snehulak> snehulaci;
 std::vector<Koule> snehoveKoule;
 std::vector<Koule> kolize;
 
-#define WIDTH 800 // sirka okna
-#define HEIGHT 680 // vyska okna
+#define WIDTH 800				// sirka okna
+#define HEIGHT 680				// vyska okna
 
-#define SMALL_ANGLE2 1.0 //konstanta maleho uhlu
-double delka_kroku; //delka kroku
-GLdouble smerPohybu[3]; //pole pro ulozeni smeru pohybu
-GLdouble uhelPohledu=180.0; //pocatecni uhel pohledu
-GLdouble beta = 0.0; //uhel, pod kterym avatar pozoruje scenu
-GLdouble sunAngle = 90; //pocatecni natoceni slunce
+#define SMALL_ANGLE2 1.0		//konstanta uhlu pro otaceni pohledu avatara
+float vyska_postavy;			//vyska avatara
+GLdouble pozice[3]={0.0, vyska_postavy, 0.0}; //pozice avatara pri startu aplikace
+GLdouble smerPohledu[3];		//promenna pro ulozeni smeru, kterym se avatar diva
+bool walkmode=true;				// kdyz true, bude mozne prochazet scenou
+double delka_kroku;				//delka kroku
+GLdouble smerPohybu[3];			//pole pro ulozeni smeru pohybu
+GLdouble uhelPohledu = 180.0;	//pocatecni uhel pohledu
+GLdouble beta = 0.0;			//uhel, pod kterym avatar pozoruje scenu
+GLdouble sunAngle = 90;			//pocatecni poloha/natoceni slunce
+double sunAngleSpeed;			//uhel udavajici rychlost obehu slunce
+bool posvit = false;			//kdyz true, tak bude svitit baterka
+bool slunceSviti = true;		//kdyz true, tak bude svitit slunce
+bool zamlzeno = false;			//kdyz true, bude husta mlha
+bool snezi = true;				//kdyz true, bude snezit
 
-double sunAngleSpeed; //uhel udavajici rychlost obehu slunce
-bool posvit = false; //kdyz true, tak bude svitit baterka
-bool slunceSviti = true; //kdyz true, tak bude svitit slunce
-bool zamlzeno = false; //kdyz true, bude husta mlha
-bool snezi = true;
-bool jedna = true;
-bool dva = true;
-bool dopredu = false;
+bool dopredu = false;			//promenne pro plynuly pohyb a pohled avatara
 bool dozadu = false;
 bool doleva = false;
 bool doprava = false;
 bool nahoru = false;
 bool dolu = false;
 
-double RYCHLOST_KOULE = 0.7;
-
-float vyska_postavy; //konstanta vysky avatara
-GLdouble pozice[3]={0.0, vyska_postavy, 0.0}; //pozice avatara pri startu aplikace
-GLdouble smerPohledu[3];
-bool walkmode=true; // kdyz true, bude mozne prochazet scenou
-
-GLdouble xm[3]; //pole pro ulozeni poloh kurzoru
-GLdouble ym[3]; //pole pro ulozeni poloh kurzoru
+GLdouble xm[3], ym[3]; //pole pro ulozeni poloh kurzoru
 
 //Definice jmen uzitych pri vytvareni grafu sceny
 #define STROM_FILE_NAME "data/strom.obj"
@@ -64,16 +58,12 @@ GLdouble ym[3]; //pole pro ulozeni poloh kurzoru
 
 CSceneNode* rootNode_p = NULL; // koren grafu sceny
 
-//Parametry zeme
-GLfloat zemeDiffuseColor[] = {0.1, 0.1, 0.1, 1}; // barva
-GLfloat zemePlaneSize = 100.0f; // velikost jednoho dilku
-GLint zemePlaneSubDiv = 30; // rozdeleni
-
 //parametry pro obrazovku
 #define PANEL_SIZE_X 2
 #define PANEL_SIZE_Y 2
 static float whichFrame = 6;
 
+//vykresleni textu ve 3D
 void strokeOutput(char *format,...) {
 	va_list args;
 	char buffer[200], *p;
@@ -87,11 +77,11 @@ void strokeOutput(char *format,...) {
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specular[16]);
 	glMaterialf(GL_FRONT, GL_SHININESS, shininess[16]);
 	glColor3f(0.6,1,1);
+	glLineWidth(5.0);
 	for (p = buffer; *p; p++) {
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
 	}
 }
-
 
 //nacita konfiguracni soubor
 void nactiSoubor(){
@@ -117,10 +107,8 @@ void setTexture(GLuint ID, CImage* image) {
 	glTexImage2D(GL_TEXTURE_2D, 0, image->GetComponents(), image->GetWidth(), image->GetHeight(), 1, image->GetFormat(), GL_UNSIGNED_BYTE, image->GetPixels());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
@@ -128,7 +116,6 @@ void setTexture(GLuint ID, CImage* image) {
 void initTextures() {
  CTextureLoader *textureLoader = new CTextureLoader();
  CImage *image = new CImage();
-
 	glGenTextures(10, textureIDs);
 
 	if (textureLoader->Load("data/iceflow_front.tga", image) != false) {
@@ -164,6 +151,7 @@ void initTextures() {
 		}
 	}
 
+	//textura vlocky
 	if (textureLoader->Load("data/snowflake.tga", image) != false) {
 		setTexture(textureIDs[9], image);
 	}
@@ -240,26 +228,30 @@ void skybox() {
 	glDisable(GL_LIGHTING);
 }
 
-void kresliScore(void) {
+//vypocte skore a prichysta pro vykresleni
+void kresliSkore(void) {
   int score = kolize.size();
   char sc [10] = "Score:  ";
-  sc[8] = char(score % 10 +48);
-  sc[7] = char(int(score/10) +48);
-  sc[6] = char(int(score/100) +48);
+  sc[8] = char(score % 10 + 48);
+  sc[7] = char(int(score/10) + 48);
+  sc[6] = char(int(score/100) + 48);
   strokeOutput(sc);
 }
 
 //nakresli plochu z tringlestripu
 void kresliPlochu(void) {
 	glNormal3f(0.0, 1.0, 0.0);
+	GLfloat zemeDiffuseColor[] = {0.1, 0.1, 0.1, 1}; // barva
 
 	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[3]);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, zemeDiffuseColor);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specular[3]);
 	glMaterialf(GL_FRONT, GL_SHININESS, 0.0);
-
-	float size = zemePlaneSize; 
-	float subDiv = zemePlaneSubDiv;
+	//pomocne promenne pri vykreslovani zeme
+	bool jedna = true; 
+	bool dva = true;			
+	float size = 100; 
+	float subDiv = 30;
 
 	float dz;
 	dz = size/subDiv;
@@ -295,7 +287,7 @@ void kresliPlochu(void) {
 	glDisable(GL_TEXTURE_2D);
 }
 
-//kresli podstavu pod brontosaurem
+//kresli podstavu pro informacni panel
 void kresliPodstavu(void) {
 	glEnable(GL_LIGHTING);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[9]);
@@ -306,7 +298,7 @@ void kresliPodstavu(void) {
 	glDisable(GL_LIGHTING);
 }
 
-//kresli informacni panel
+//kresli informacni panel s texturami
 void infoPanel() {
 	glPushMatrix();
 	glDisable(GL_LIGHTING);
@@ -323,42 +315,44 @@ void infoPanel() {
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_LIGHTING);
 	glPopMatrix();
-
 }
 
-//vykresli zemi
-class CZemeNode : public CGeometryNode { //vykresli zemi
+//uzel grafu s metodou pro vykresleni zeme
+class CZemeNode : public CGeometryNode {
 	void Update(void){
 		kresliPlochu();
 	}
 };
 
-//vykresli podstavec
-class CPodstavecNode : public CGeometryNode { 
-	void Update(void){
-		kresliPodstavu();
-	}
-};
-
-class CScoreNode : public CGeometryNode { 
-	void Update(void){
-		kresliScore();
-	}
-};
-
-//vykresli skybox
+//uzel grafu s metodou pro vykresleni skyboxu
 class CSkyboxNode : public CGeometryNode { 
 	void Update(void){
 		skybox();
 	}
 };
 
+//uzel grafu s metodou pro vykresleni skore
+class CScoreNode : public CGeometryNode { 
+	void Update(void){
+		kresliSkore();
+	}
+};
+
+//uzel grafu s metodou pro vykresleni podstavce
+class CPodstavecNode : public CGeometryNode { 
+	void Update(void){
+		kresliPodstavu();
+	}
+};
+
+//uzel grafu s metodou pro vykresleni panelu s texturami
 class CPanelNode : public CGeometryNode { 
 	void Update(void){
 		infoPanel();
 	}
 };
 
+//uzel grafu s metodou pro vykresleni snehulaka
 class CSnehulakNode : public CGeometryNode { 
 	void Update(void){
 		sn->vykreslit();
@@ -385,7 +379,6 @@ void baterka(void) {
     glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, smerSvetla);	
 }
 
-
 //zapne nebo vypne baterku - light1
 void prepniBaterku(void) { 
 	if (!posvit) {
@@ -406,6 +399,7 @@ void slunce(void) {
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, barvaSlunceDif);
 	GLfloat sunPos[] = {0.0, WORLD_HEIGHT*sin(sunAngle*DEG_TO_RAD), WORLD_SIZE_2*cos(sunAngle*DEG_TO_RAD), 0.0};
 	glLightfv(GL_LIGHT0, GL_POSITION, sunPos);
+	//kresleni polohy slunce pro testovani
 	//glPushMatrix();
 	//glTranslated(0.0, 20*sin(sunAngle*DEG_TO_RAD), 20*cos(sunAngle*DEG_TO_RAD));
 	//glutSolidSphere(1.0,10.0,10.0);
@@ -443,7 +437,6 @@ void prepniMlhu(void) {
 		HUSTOTA_PROSTREDI -=1;
 	}
 	zamlzeno = !zamlzeno;
-
 }
 
 //vytvori novou kouli
@@ -458,18 +451,18 @@ void hodKouli() {
 
 //nastaveni parametru pro prvni staticky pohled
 void statickyPohled1(void) { 
-	walkmode=false;
+	walkmode = false;
 	pozice[0] = 15.0; pozice[1] = 15.0; pozice[2] = -15.0;
-	uhelPohledu=120.0;
-	beta=-20.0;
+	uhelPohledu = 120.0;
+	beta = -20.0;
 }
 
 //nastaveni parametru pro druhy staticky pohled
 void statickyPohled2(void) { 
-	walkmode=false;
+	walkmode = false;
 	pozice[0] = 29.0; pozice[1] = 15.0; pozice[2] = 29.0;
-	uhelPohledu=-135.0;
-	beta=-30.0;
+	uhelPohledu = -135.0;
+	beta = -30.0;
 }
 
 //vypne nebo zapne snezeni
@@ -482,7 +475,7 @@ void prepniWalkmode(void) {
 	walkmode=!walkmode;
 }
 
-//Otoci pohled doprava
+//otoci pohled doprava
 void otocDoprava() { 
 	uhelPohledu += SMALL_ANGLE2;
 	if( uhelPohledu > 360.0 ) uhelPohledu -= 360.0;
@@ -494,7 +487,7 @@ void otocDoleva() {
 	if( uhelPohledu < -360.0 ) uhelPohledu += 360.0;
 }
 
-//Posune pozici dopredu
+//Posune avatara dopredu
 void posunDopredu() { 
 	pozice[0] += delka_kroku * smerPohybu[0];
 	pozice[1] += delka_kroku * smerPohybu[1];
@@ -505,7 +498,7 @@ void posunDopredu() {
 	if (pozice[2] < -WORLD_SIZE_2+2) {pozice[2] = -WORLD_SIZE_2+2;}
 }
 
-//Posune pozici dozadu
+//Posune avatara dozadu
 void posunDozadu() { 
 	pozice[0] -= delka_kroku * smerPohybu[0];
 	pozice[1] -= delka_kroku * smerPohybu[1];
@@ -538,41 +531,39 @@ void Reshape(int w, int h) {
 }
 
 void Idle(void) {
-
-	sunAngle += sunAngleSpeed; //uhel pro obeh slunce
+	sunAngle += sunAngleSpeed; //posune slunce
 	if(sunAngle > 180.0) sunAngle = 0.0;
 	
 	if(whichFrame >= 9) {whichFrame = 6;}
 	whichFrame+=0.005;
 
-		double u = random(-2,2);
-		double v = random(-2,2);
-		CVector3D poz(u,(u+v)*0.1,v);
+	//zema smeru vetru
+	double u = random(-2,2);
+	double v = random(-2,2);
+	CVector3D poz(u,(u+v)*0.1,v);
 	VITR += poz;
 
 	if (snezi) {
-		// 
+		//pokud snezi, jsou pridany nove vlocky
 		pWorld.addRandom(1);
-
-		// update particle worlds
+		// update particle world
 		pWorld.update(timer.RealTime());
 	}
 
+	//kontrola zasahu snehulaku nekterou z kouli
 	for(int i=0; i<snehoveKoule.size(); i++) {
 	  snehoveKoule[i].update();
-	  if (snehoveKoule[i].koliduje()) {
-
-		  //pWorld.addRandom(1);
-		  
+	  if (snehoveKoule[i].koliduje()) { //pokud koliduje
 		  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, snehoveKoule[i].polomer);
 		  kolize.push_back(k);
 		  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
 	  }
-	  else if (snehoveKoule[i].jeVenku()) {
+	  else if (snehoveKoule[i].jeVenku()) { //pokud opusti scenu
 		  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
 	  }
     }
 
+	//posun samotnych snehulaku
 	for (int j=0; j<snehulaci.size(); j++) {
 		snehulaci[j].posun();
 		snehulaci[j].rodic->LoadIdentity();
@@ -587,11 +578,8 @@ void Idle(void) {
 	if (dolu)		{otocDolu();}
 
 	glutWarpPointer(WIDTH/2,HEIGHT/2);
-
 	glutPostRedisplay();
 }
-
-
 
 void Display(void) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -634,20 +622,22 @@ void Display(void) {
 	mlha();
   }
   
+  //vykresleni vsech leticich snehovych kouli
   for(int i=0; i<snehoveKoule.size(); i++) {
 	  snehoveKoule[i].vykreslit();
   }
 
+  //vykresleni kolizi - hromadek na zemi
   for(int i=0; i<kolize.size(); i++) {
 	  kolize[i].vykreslit2();
   }
 
-  // draw scene graph
+  //vykresleni celho grafu sceny
   rootNode_p->Update();
 
+  //vykresleni vsech vlocek
   if (snezi) {
-	// draw particle worlds
-	pWorld.draw();
+	  pWorld.draw();
   }
   
   glutSwapBuffers(); 
@@ -835,13 +825,10 @@ void myMotion(int x, int y)	{
 	}
 }
 
-//inicializace pøi startu
+//inicializace pri startu
 void init(void) {
-	//printf("timer: %f", timer.RealTime());
-
 	srand(time(NULL));	
 	pWorld.init();
-	//pWorld.printOut();
 	
 	nactiSoubor();
 	initTextures();
@@ -879,7 +866,7 @@ CPanelNode * panel = new CPanelNode(); // OBRAZOVKA INFORMACNIHO PANELU
 	panel_p->AddChildNode(panel);
 	rootNode_p->AddChildNode(panel_p);
 
-COBJNode *bench = new COBJNode(); // LAVICKA
+COBJNode *bench = new COBJNode();
 	bench->Load(BENCH_FILE_NAME);
 
 	CTransformNode * bench1_p = new CTransformNode();
@@ -889,7 +876,7 @@ COBJNode *bench = new COBJNode(); // LAVICKA
 	bench1_p->AddChildNode(bench);
 	rootNode_p->AddChildNode(bench1_p);
 
-COBJNode *strom = new COBJNode(); // STROM
+COBJNode *strom = new COBJNode();
 	strom->Load(STROM_FILE_NAME);
 
 	CTransformNode * strom_p1 = new CTransformNode();
@@ -911,12 +898,12 @@ COBJNode *strom = new COBJNode(); // STROM
 	strom_p3->AddChildNode(strom);
 	rootNode_p->AddChildNode(strom_p3);
 
-CZemeNode * zeme = new CZemeNode(); // ZEME
+CZemeNode * zeme = new CZemeNode();
 	CTransformNode * zeme_p = new CTransformNode();
 	zeme_p->AddChildNode(zeme);
 	rootNode_p->AddChildNode(zeme_p);
 
-CSkyboxNode * skybox = new CSkyboxNode(); // SKYBOX
+CSkyboxNode * skybox = new CSkyboxNode();
 	CTransformNode * skybox_p = new CTransformNode();
 	skybox_p->Translate(0.0, -12.0, 0.0);
 	skybox_p->AddChildNode(skybox);
@@ -952,7 +939,7 @@ CSnehulakNode * sneh3 = new CSnehulakNode();
 	sneh_p3->Rotate(10.0, 0.0, 1.0, 0.0);
 	rootNode_p->AddChildNode(sneh_p3);
 
-CScoreNode *score = new CScoreNode(); // SCORE
+CScoreNode *score = new CScoreNode();
 	CTransformNode * score_p1 = new CTransformNode();
 	score_p1->Translate(-WORLD_SIZE_2+1, WORLD_HEIGHT/4, 7);
 	score_p1->Rotate(90,0,1,0);
@@ -980,7 +967,6 @@ CScoreNode *score = new CScoreNode(); // SCORE
 	score_p4->AddChildNode(score);
 	rootNode_p->AddChildNode(score_p4);	
 
-
 	// ostatní inicializace
 	glEnable(GL_LIGHT0);
 	glutSetCursor(GLUT_CURSOR_NONE); //skryje kurzor
@@ -997,7 +983,7 @@ void myMenu(int polozkaMenu){
 	case 2: //umisti pozorovatele na druhe staticke stanoviste
 		statickyPohled2();		
 		break;
-    case 4: //walk mode
+    case 3: //walk mode
 		prepniWalkmode();
       break;
 	case 11:  //zapne nebo vypne baterku
@@ -1008,6 +994,9 @@ void myMenu(int polozkaMenu){
       break;
     case 21:  //zapne nebo vypne slunce
 		prepniMlhu();
+      break;
+	case 22:  //zapne nebo vypne snezeni
+		prepniSnezeni();
       break;
     case 99: //ukonci aplikaci
       exit(0);
@@ -1026,9 +1015,9 @@ void myMouse(int button, int state, int x, int y) {
 void menu(void) {
 	/* Podmenu Kamera */
 	int menuKamera = glutCreateMenu(myMenu);
-	glutAddMenuEntry("1. statický pohled (1)", 1);
-	glutAddMenuEntry("2. statický pohled (2)", 2);
-	glutAddMenuEntry("Walk mode ON/OFF (4)", 4);
+	glutAddMenuEntry("1. staticky pohled (1)", 1);
+	glutAddMenuEntry("2. staticky pohled (2)", 2);
+	glutAddMenuEntry("Walk mode ON/OFF (3)", 3);
 
 	/* Podmenu Svetla */
 	int menuSvetla = glutCreateMenu(myMenu);
@@ -1040,6 +1029,7 @@ void menu(void) {
 	glutAddSubMenu("Kamera", menuKamera);
 	glutAddSubMenu("Svetla", menuSvetla);
 	glutAddMenuEntry("Mlha ON/OFF (m)", 21); 
+	glutAddMenuEntry("Snezeni ON/OFF (m)", 22); 
 	glutAddMenuEntry("Konec", 99);
 
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
@@ -1051,10 +1041,7 @@ void initGL(void) {
   glDepthFunc(GL_LESS);
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LINE_SMOOTH);
-
-  glLineWidth(5.0);
-
-  glEnable(GL_LIGHTING); //zapne osvetleni
+  glEnable(GL_LIGHTING);
 }
 
 int main(int argc, char **argv) {
@@ -1064,7 +1051,7 @@ int main(int argc, char **argv) {
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
   glutInitWindowSize(WIDTH, HEIGHT);
 
-  glutCreateWindow("MMA semestralni práce pro CAVE - particle system");
+  glutCreateWindow("MMA semestralni prace pro CAVE - particle system");
 
   glutDisplayFunc(Display);
   glutReshapeFunc(Reshape);
