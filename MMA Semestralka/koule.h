@@ -96,8 +96,8 @@ public:
 
 				double v = random(5,15);
 				double u = random(0,360);
-				snehulaci[i].pozicex = cos(u)*v;
-				snehulaci[i].pozicez = sin(u)*v;
+				snehulaci[i].pozice[X] = cos(u)*v;
+				snehulaci[i].pozice[Z] = sin(u)*v;
 				return true;
 			}
 		}

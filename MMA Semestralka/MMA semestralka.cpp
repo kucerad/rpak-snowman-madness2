@@ -559,7 +559,7 @@ void Idle(void) {
 		for (int j=0; j<snehulaci.size(); j++) {
 			snehulaci[j].posun();
 			snehulaci[j].rodic->LoadIdentity();
-			snehulaci[j].rodic->Translate(snehulaci[j].pozicex,snehulaci[j].pozicey,snehulaci[j].pozicez);
+			snehulaci[j].rodic->Translate(snehulaci[j].pozice[X],snehulaci[j].pozice[Y],snehulaci[j].pozice[Z]);
 		}
 	}
 
@@ -834,9 +834,9 @@ void init(void) {
 	nactiSoubor();
 	initTextures();
 
-	Snehulak s1(6.0, -0.2, -5.0, 0.99, 1, 0.8, 2.4, 0.6, 3.5);
-	Snehulak s2(-7.0, -0.2, 7.0, 1.5, 1.5, 1.2, 3.6, 0.99, 5.3);
-	Snehulak s3(10.0, -0.2, -12.0, 0.8, 0.8, 0.6, 1.9, 0.4, 2.7);
+	Snehulak s1(CVector3D(6.0, -0.2, -5.0), CVector3D(0.99, 0.8, 0.6), CVector3D(1, 2.4, 3.5));
+	Snehulak s2(CVector3D(-7.0, -0.2, 7.0), CVector3D(1.5,  1.2, 0.99), CVector3D(1.5, 3.6, 5.3));
+	Snehulak s3(CVector3D(10.0, -0.2, -12.0), CVector3D(0.8, 0.6, 0.4), CVector3D(0.8, 1.9, 2.7));
 	snehulaci.push_back(s1);
 	snehulaci.push_back(s2);
 	snehulaci.push_back(s3);
@@ -916,7 +916,7 @@ CSnehulakNode * sneh = new CSnehulakNode();
 	CTransformNode * sneh_p = new CTransformNode();
 	snehulaci[0].rodic = sneh_p;
 	sneh_p->AddChildNode(sneh);
-	sneh_p->Translate(sneh->sn->pozicex,sneh->sn->pozicey,sneh->sn->pozicez);
+	sneh_p->Translate(sneh->sn->pozice[X],sneh->sn->pozice[Y],sneh->sn->pozice[Z]);
 	sneh_p->Rotate(60.0, 0.0, 1.0, 0.0);
 	rootNode_p->AddChildNode(sneh_p);
 
@@ -926,7 +926,7 @@ CSnehulakNode * sneh2 = new CSnehulakNode();
 	CTransformNode * sneh_p2 = new CTransformNode();
 	snehulaci[1].rodic = sneh_p2;
 	sneh_p2->AddChildNode(sneh2);
-	sneh_p2->Translate(sneh2->sn->pozicex,sneh2->sn->pozicey,sneh2->sn->pozicez);
+	sneh_p2->Translate(sneh2->sn->pozice[X],sneh2->sn->pozice[Y],sneh2->sn->pozice[Z]);
 	sneh_p2->Rotate(10.0, 0.0, 1.0, 0.0);
 	rootNode_p->AddChildNode(sneh_p2);
 
@@ -936,7 +936,7 @@ CSnehulakNode * sneh3 = new CSnehulakNode();
 	CTransformNode * sneh_p3 = new CTransformNode();
 	snehulaci[2].rodic = sneh_p3;
 	sneh_p3->AddChildNode(sneh3);
-	sneh_p3->Translate(sneh3->sn->pozicex,sneh3->sn->pozicey,sneh3->sn->pozicez);
+	sneh_p3->Translate(sneh3->sn->pozice[X],sneh3->sn->pozice[Y],sneh3->sn->pozice[Z]);
 	sneh_p3->Rotate(10.0, 0.0, 1.0, 0.0);
 	rootNode_p->AddChildNode(sneh_p3);
 
