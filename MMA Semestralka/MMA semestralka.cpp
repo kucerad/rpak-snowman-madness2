@@ -540,7 +540,7 @@ void Idle(void) {
 			pWorld.update(timer.RealTime());
 		}
 
-		std::cout << pWorld.particles.size() <<"\n";
+		//std::cout << pWorld.particles.size() <<"\n";
 
 		//kontrola zasahu snehulaku nekterou z kouli
 		for(int i=0; i<snehoveKoule.size(); i++) {
@@ -829,7 +829,6 @@ void myMotion(int x, int y)	{
 //inicializace pri startu
 void init(void) {
 	srand(time(NULL));	
-	pWorld.init();
 	
 	nactiSoubor();
 	initTextures();
