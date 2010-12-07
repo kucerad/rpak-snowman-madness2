@@ -1,4 +1,7 @@
 #define CAVEMOD 0
+#if CAVEMOD
+	#include <cave_ogl.h>
+#endif
 
 #include "physics.h"
 #include "switches.h"
