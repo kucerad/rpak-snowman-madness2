@@ -7,7 +7,7 @@
 //parametry sveta
 #define WORLD_SIZE_2  30.0
 #define WORLD_HEIGHT  30.0
-#define ZEME 0.0 // vyska
+#define ZEME 0.0 // vyska zeme
 
 #define DEG_TO_RAD (3.14159/180.0) // konstanta pro prevod stupnu na radiany
 
@@ -31,8 +31,8 @@ int randSeed = 0;
 int r_s = 0;
 double u(0), v(0);
 
+//funkce pro generovani nahodnych cisel
 inline double AKrandom(double min, double max){
-	
 	randSeed = int(timer.RealTime()*100000);
 	//printf("randseed=%i\n", randSeed);
 	srand(randSeed*r_s);
@@ -44,8 +44,8 @@ inline double AKrandom(double min, double max){
 	return r;
 };
 
+//funkce pro generovani nahodnych cisel
 double random(int min, int max) {
-
 	return rand()%(max-min-2)-(max-1) + rand()%100*0.01;
 } 
 
