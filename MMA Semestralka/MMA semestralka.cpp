@@ -1,3 +1,5 @@
+#define CAVEMOD 0
+
 #include "physics.h"
 #include "switches.h"
 #include <math.h>
@@ -523,7 +525,7 @@ void Reshape(int w, int h) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
-
+// update sceny
 void Idle(void) {
 	if (!pause) {
 		sunAngle += sunAngleSpeed; //posune slunce
@@ -575,10 +577,48 @@ void Idle(void) {
 	if (dolu)		{otocDolu();}
 
 	glutWarpPointer(WIDTH/2,HEIGHT/2);
+#if !CAVEMOD
 	glutPostRedisplay();
+#endif
 }
 
 void Display(void) {
+#if CAVEMOD
+  // do something and draw...
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Camera transform 
+  CAVENavTransform();
+	
+  if (slunceSviti) { //aktivace slunce
+	slunce();
+  }
+
+  if (posvit) { //aktivace baterky
+	baterka();
+  }
+
+  if (zamlzeno) { //aktivace mlhy
+	mlha();
+  }
+  
+  //vykresleni vsech leticich snehovych kouli
+  for(int i=0; i<snehoveKoule.size(); i++) {
+	  snehoveKoule[i].vykreslit();
+  }
+
+  //vykresleni kolizi - hromadek na zemi
+  for(int i=0; i<kolize.size(); i++) {
+	  kolize[i].vykreslit2();
+  }
+
+  //vykresleni celho grafu sceny
+  rootNode_p->Update();
+
+  //vykresleni vsech vlocek
+  if (snezi) {
+	  pWorld.draw();
+  }
+#else
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -638,6 +678,7 @@ void Display(void) {
   }
   
   glutSwapBuffers(); 
+#endif
 }
 
 void mySpecialKeyboard (int key, int x, int y) {
@@ -830,13 +871,10 @@ void myMotion(int x, int y)	{
 	}
 }
 
-//inicializace pri startu
-void init(void) {
-	srand(time(NULL));	
-	
+//inicializace sveta pri startu
+void initWorld(void) {
+	srand(time(NULL));		
 	nactiSoubor();
-	initTextures();
-
 	Snehulak s1(CVector3D(6.0, -0.2, -5.0), CVector3D(0.99, 0.8, 0.6), CVector3D(1, 2.4, 3.5));
 	Snehulak s2(CVector3D(-7.0, -0.2, 7.0), CVector3D(1.5,  1.2, 0.99), CVector3D(1.5, 3.6, 5.3));
 	Snehulak s3(CVector3D(10.0, -0.2, -12.0), CVector3D(0.8, 0.6, 0.4), CVector3D(0.8, 1.9, 2.7));
@@ -970,14 +1008,15 @@ CScoreNode *score = new CScoreNode();
 	score_p4->Scale(0.03,0.03,0.03);
 	score_p4->AddChildNode(score);
 	rootNode_p->AddChildNode(score_p4);	
-
-	// ostatní inicializace
-	glEnable(GL_LIGHT0);
-	glutSetCursor(GLUT_CURSOR_NONE); //skryje kurzor
-	glutWarpPointer(WIDTH/2,HEIGHT/2); //nastavi kurzor na stred okna
-
 }
 
+// ostatní inicializace
+void initOther(void){
+	glEnable(GL_LIGHT0);
+	initTextures();
+	glutSetCursor(GLUT_CURSOR_NONE); //skryje kurzor
+	glutWarpPointer(WIDTH/2,HEIGHT/2); //nastavi kurzor na stred okna
+}
 //prirazeni akci k jednotlivym polozkam
 void myMenu(int polozkaMenu){ 
   switch(polozkaMenu) {
@@ -1056,6 +1095,32 @@ void initGL(void) {
 int main(int argc, char **argv) {
   timer.Reset();
   timer.Start();
+#if CAVEMOD
+  // compile for CAVE
+	// init world
+  //TODO: is it ok to init textures here????
+	initWorld();
+	initOther();
+
+	CAVEConfigure(&argc,argv,NULL);
+	CAVEInitApplication((CAVECALLBACK)InitGL,0);
+	CAVEDisplay((CAVECALLBACK)DrawGLScene,0);
+	CAVEFrameFunction((CAVECALLBACK)frameFunc,0);
+	CAVEInit();
+	std::cout << "Starting up main loop" << std::endl;	
+ 	if (CAVEDistribMaster()) 
+		while (!CAVEgetbutton(CAVE_ESCKEY)) {
+			// catch inputs
+
+			// update all
+
+			CAVEUSleep(10);
+		}
+	else while (!CAVESync->Quit) CAVEUSleep(15);
+	std::cout<< "Cleaning up." << std::endl;
+	CAVEExit();
+	return 0;
+#else 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
   glutInitWindowSize(WIDTH, HEIGHT);
@@ -1074,11 +1139,13 @@ int main(int argc, char **argv) {
 
   menu();
 
-  init();
+  initWorld();
+  initOther();
   initGL();
 	
   glutMainLoop();
   timer.Stop();
-  return 0;        
+  return 0;  
+#endif
 }
 
