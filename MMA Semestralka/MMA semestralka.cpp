@@ -30,6 +30,8 @@ std::vector<Koule> kolize;
 
 #define SMALL_ANGLE2 1.0		//konstanta uhlu pro otaceni pohledu avatara
 float vyska_postavy;			//vyska avatara
+float pocet_kouli;
+
 GLdouble pozice[3]={0.0, vyska_postavy, 0.0}; //pozice avatara pri startu aplikace
 GLdouble smerPohledu[3];		//promenna pro ulozeni smeru, kterym se avatar diva
 bool walkmode=true;				// kdyz true, bude mozne prochazet scenou
@@ -80,6 +82,7 @@ void nactiSoubor(){
 		sunAngleSpeed = 1;
 		delka_kroku = 0.2;
 		vyska_postavy = 1.7;
+		pocet_kouli = 10; 
 	} else {
 		float x;
 		if (fscanf_s(fr, "%f\n", &x) == NULL) sunAngleSpeed = 1;
@@ -88,6 +91,8 @@ void nactiSoubor(){
 		else delka_kroku = x;
 		if (fscanf_s(fr, "%f\n", &x) == NULL) vyska_postavy = 1.7; 
 		else vyska_postavy = x;
+		if (fscanf_s(fr, "%f\n", &x) == NULL) pocet_kouli = 10; 
+		else pocet_kouli = x;
 	}
 }
 
@@ -435,7 +440,7 @@ void prepniMlhu(void) {
 
 //vytvori novou kouli
 void hodKouli() {
-	if (snehoveKoule.size()<10) {
+	if (snehoveKoule.size()<pocet_kouli) {
 		CVector3D p(pozice[0], pozice[1], pozice[2]);
 		CVector3D s(smerPohledu[0], smerPohledu[1], smerPohledu[2]);
 		Koule k(p+s*4,s, RYCHLOST_KOULE, (random(-15,15)/15)*0.05+0.5);
