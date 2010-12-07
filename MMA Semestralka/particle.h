@@ -149,21 +149,21 @@ public:
 					glVertex3d(Tspeed[X]*sc, Tspeed[Y]*sc, Tspeed[Z]*sc);
 				glEnd();
 				// Normal Force GREEN
-				/*
+				
 				glBegin(GL_LINES);
 					glColor3f(0.f, 1.0f, 0.f);
 					glVertex3d(0.0, 0.0, 0.0);
 					glVertex3d(Fn[X]*10, Fn[Y]*10, Fn[Z]*10);
 				glEnd();
-				*/
+				
 				// Side Force YELLOW
-				/*
+				
 				glBegin(GL_LINES);
 					glColor3f(1.0f, 1.0f, 0.f);
 					glVertex3d(0.0, 0.0, 0.0);
 					glVertex3d(Ft[X], Ft[Y], Ft[Z]);
 				glEnd();
-				*/
+				
 				// Normal RED
 				glBegin(GL_LINES);
 					glColor3f(1.0f, 0.f, 0.f);
@@ -174,10 +174,11 @@ public:
 	}
 //#endif				
 				//glRotated(angle, axis[X], axis[Y], axis[Z]);
+				
 				glMultMatrixd(transf._matrix);
 				
 				glColor3f(1.f,1.f, 1.f);		
-
+				//glEnable(GL_LIGHTING);
 				glEnable(GL_TEXTURE_2D);
 				// povoleni michani barev
 				glEnable(GL_BLEND);
