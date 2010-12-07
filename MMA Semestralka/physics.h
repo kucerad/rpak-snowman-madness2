@@ -22,8 +22,8 @@ double		KOEF_TRENI = 0.3;
 double		dt = 0.001;
 double		EPSILON = 0.00000001;
 CVector3D	VEPSILON(EPSILON);
-float		PI = 3.14159265;
-float		PI_2 = PI/2;
+double		PI = 3.14159265;
+double 		PI_2 = PI/2;
 
 CTimer timer;
 

@@ -59,7 +59,7 @@ void strokeOutput(char *format,...) {
 	char buffer[200], *p;
 
 	va_start(args, format);
-	vsprintf(buffer, format, args);
+	vsprintf_s(buffer, 200, format, args);
 	va_end(args);
 	  
   	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[16]);
@@ -76,20 +76,21 @@ void strokeOutput(char *format,...) {
 //nacita konfiguracni soubor
 void nactiSoubor(){
 	FILE * fr;
-	if ((fr = fopen("data/config.ini", "r")) == NULL) {
+	if ((fopen_s(&fr, "data/config.ini", "r")) != 0) {
 		sunAngleSpeed = 1;
 		delka_kroku = 0.2;
 		vyska_postavy = 1.7;
 	} else {
 		float x;
-		if (fscanf(fr, "%f\n", &x) == NULL) sunAngleSpeed = 1;
+		if (fscanf_s(fr, "%f\n", &x) == NULL) sunAngleSpeed = 1;
 		else sunAngleSpeed = x;
-		if (fscanf(fr, "%f\n", &x) == NULL) delka_kroku = 0.2; 
+		if (fscanf_s(fr, "%f\n", &x) == NULL) delka_kroku = 0.2; 
 		else delka_kroku = x;
-		if (fscanf(fr, "%f\n", &x) == NULL) vyska_postavy = 1.7; 
+		if (fscanf_s(fr, "%f\n", &x) == NULL) vyska_postavy = 1.7; 
 		else vyska_postavy = x;
 	}
 }
+
 
 //nastaveni textury
 void setTexture(GLuint ID, CImage* image) {
@@ -135,7 +136,7 @@ void initTextures() {
 	// obrazovky
 	char filename[128];
 	for(int i=1; i<4; i++) {
-		sprintf(filename, "data/panel%i.tga", i);
+		sprintf_s(filename, "data/panel%i.tga", i, "r");
 		if (textureLoader->Load(filename, image) != false) {
 			setTexture(textureIDs[5+i], image);
 		}
@@ -519,7 +520,6 @@ void Reshape(int w, int h) {
 }
 
 void Idle(void) {
-
 	if (!pause) {
 		sunAngle += sunAngleSpeed; //posune slunce
 		if(sunAngle > 180.0) sunAngle = 0.0;
@@ -532,7 +532,6 @@ void Idle(void) {
         CVector3D poz(5*sin(u),0.0,5*sin(v));
         VITR = poz;
 
-
 		if (snezi) {
 			//pokud snezi, jsou pridany nove vlocky
 			pWorld.addRandom(2);
@@ -543,7 +542,7 @@ void Idle(void) {
 		//std::cout << pWorld.particles.size() <<"\n";
 
 		//kontrola zasahu snehulaku nekterou z kouli
-		for(int i=0; i<snehoveKoule.size(); i++) {
+		for(unsigned int i=0; i<snehoveKoule.size(); i++) {
 		  snehoveKoule[i].update();
 		  if (snehoveKoule[i].koliduje()) { //pokud koliduje
 			  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, snehoveKoule[i].polomer);
@@ -556,7 +555,7 @@ void Idle(void) {
 		}
 
 		//posun samotnych snehulaku
-		for (int j=0; j<snehulaci.size(); j++) {
+		for (unsigned int j=0; j<snehulaci.size(); j++) {
 			snehulaci[j].posun();
 			snehulaci[j].rodic->LoadIdentity();
 			snehulaci[j].rodic->Translate(snehulaci[j].pozice[X],snehulaci[j].pozice[Y],snehulaci[j].pozice[Z]);
@@ -616,12 +615,12 @@ void Display(void) {
   }
   
   //vykresleni vsech leticich snehovych kouli
-  for(int i=0; i<snehoveKoule.size(); i++) {
+  for(unsigned int i=0; i<snehoveKoule.size(); i++) {
 	  snehoveKoule[i].vykreslit();
   }
 
   //vykresleni kolizi - hromadek na zemi
-  for(int i=0; i<kolize.size(); i++) {
+  for(unsigned int i=0; i<kolize.size(); i++) {
 	  kolize[i].vykreslit2();
   }
 
