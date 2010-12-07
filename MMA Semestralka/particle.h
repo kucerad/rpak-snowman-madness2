@@ -25,11 +25,11 @@ public:
 	  rotDiff(_rot),
 	  lTime(_lTime){
 
-		transf.LoadIdentityMatrix();
-		transf.Rotate(_axis[X], _axis[Y], _axis[Z], _angle);
-		normal = transf * Normalize(_normal);
-		timeElapsed = 0;
-	  }
+	  transf.LoadIdentityMatrix();
+	  transf.Rotate(_axis[X], _axis[Y], _axis[Z], _angle);
+	  normal = transf * Normalize(_normal);
+	  timeElapsed = 0;
+	}
 
 	~Particle(){};
 
@@ -49,14 +49,16 @@ public:
 	vec			Fn;
 	vec			Ft;
 	vec			S;
-	vec		Nspeed;
-	vec		Tspeed;
+	vec			Nspeed;
+	vec			Tspeed;
 	double		timeElapsed;
 
+	//vypis parametru castice
 	void printOut(void){
 		printf("P[%f, %f, %f] speed[%f, %f, %f]\n", position[X], position[Y], position[Z], speed[X], speed[Y], speed[Z]);
 	}
 
+	//kontrola, zda castice opustila scenu
 	bool jeVenku(void) {
 		if (position[0] < WORLD_SIZE_2 && position[0] > -WORLD_SIZE_2 && position[2] < WORLD_SIZE_2 && position[2] > -WORLD_SIZE_2 && position[1] > 0) {
 			return false;
@@ -66,6 +68,7 @@ public:
 		}
 	}
 
+	//vypocet parametru castice v dalsim kroku
 	void update(double time){
 		diffTransf.LoadIdentityMatrix();
 		double tDiff = dt;
@@ -113,6 +116,8 @@ public:
 		transf = diffTransf*transf;
 		
 	}
+
+	//vykresli castici
 	void draw(void){
 		if (life<0){
 			return;
@@ -192,42 +197,8 @@ public:
 				  glVertex3d(-s2, 0.0, s2);
 				glEnd();
 
-				//glBindTexture(GL_TEXTURE_2D, textureIDs[9]);
-				//glBegin(GL_QUADS);
-				//  glTexCoord2f(0.0, 1.0);
-				//  glVertex3d(0, -s3, -s2);
-  		//		  
-				//  glTexCoord2f(0.0, 0.0);
-				//  glVertex3d(0, -s3, s2);
-				//  
-				//  glTexCoord2f(1.0, 0.0);
-				//  glVertex3d(0, s3, s2);
-				//  
-				//  glTexCoord2f(1.0, 1.0);
-				//  glVertex3d(0, s3, -s2);
-				//glEnd();
-
-				//glBindTexture(GL_TEXTURE_2D, textureIDs[9]);
-				//glBegin(GL_QUADS);
-				//  glTexCoord2f(0.0, 0.0);
-				//  glVertex3d(-s2, -s3, 0);
-  		//		  
-				//  glTexCoord2f(1.0, 0.0);
-				//  glVertex3d(s2, -s3, 0);
-				//  
-				//  glTexCoord2f(1.0, 1.0);
-				//  glVertex3d(s2, s3, 0);
-				//  
-				//  glTexCoord2f(0.0, 1.0);
-				//  glVertex3d(-s2, s3, 0);
-				//glEnd();
-
-
 				glDisable(GL_BLEND);
 				glDisable(GL_TEXTURE_2D);
-				// draw normal...
-				
-
 			
 			//glDisable(GL_LIGHTING);
 	
