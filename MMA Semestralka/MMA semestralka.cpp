@@ -80,14 +80,14 @@ void nactiSoubor(){
 	FILE * fr;
 	if ((fopen_s(&fr, "data/config.ini", "r")) != 0) {
 		sunAngleSpeed = 1;
-		delka_kroku = 0.2;
+		delka_kroku = 0.1;
 		vyska_postavy = 1.7;
 		pocet_kouli = 10; 
 	} else {
 		float x;
 		if (fscanf_s(fr, "%f\n", &x) == NULL) sunAngleSpeed = 1;
 		else sunAngleSpeed = x;
-		if (fscanf_s(fr, "%f\n", &x) == NULL) delka_kroku = 0.2; 
+		if (fscanf_s(fr, "%f\n", &x) == NULL) delka_kroku = 0.1; 
 		else delka_kroku = x;
 		if (fscanf_s(fr, "%f\n", &x) == NULL) vyska_postavy = 1.7; 
 		else vyska_postavy = x;
