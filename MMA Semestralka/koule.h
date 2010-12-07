@@ -84,7 +84,7 @@ public:
 
 	//zjisteni, zda koule koliduje s nekterym snehulakem
 	bool koliduje(void) {
-		for (int i=0; i<snehulaci.size(); i++) {
+		for (unsigned int i=0; i<snehulaci.size(); i++) {
 			if (snehulaci[i].koliduje(pozice, polomer)) {
 				//kdyz koliduje, vygeneruji se vlocky a zmeni se pozice snehulaka
 				pGen.position = pozice;

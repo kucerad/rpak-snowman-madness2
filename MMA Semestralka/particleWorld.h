@@ -20,7 +20,7 @@ public:
 	//vypise parametry vsech particlu ve svete
 	void printOut(void){
 		printf("PWorld: [\n");
-		for (int i=0; i<particles.size(); i++){
+		for (unsigned int i=0; i<particles.size(); i++){
 			printf("\t");
 			particles[i].printOut();
 		}
@@ -55,7 +55,7 @@ public:
 
 	//update vsech castic
 	void update(double time){
-		for (int i=0; i<particles.size(); i++){
+		for (unsigned int i=0; i<particles.size(); i++){
 			if (particles[i].jeVenku()){ 
 				//odstraneni castic, ktere opustily scenu
 				particles.erase(particles.begin()+i, particles.begin()+i+1);
