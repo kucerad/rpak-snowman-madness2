@@ -2,7 +2,7 @@
 #define __PARTICLEWORLD
 #include <vector>
 #include "Vector.h"
-#include "Particle.h"
+#include "particle.h"
 #include "ParticleGenerator.h"
 
 typedef CVector3D vec;

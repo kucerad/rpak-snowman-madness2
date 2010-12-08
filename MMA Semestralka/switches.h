@@ -12,6 +12,9 @@ bool doprava = false;
 bool nahoru = false;
 bool dolu = false;
 bool debug = false;			// on/off debug mode
-bool pause = false;			//zastavuje update vsech objektu
+bool pause2 = false;			//zastavuje update vsech objektu
+float rychlost = 0;
+CMatrix rotMatrix;
 
-#endif __SWITCHES_H
+
+#endif // __SWITCHES_H
