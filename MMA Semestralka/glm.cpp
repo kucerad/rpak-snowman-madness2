@@ -190,7 +190,7 @@ glmAddGroup(GLMmodel* model, char* name)
     group = glmFindGroup(model, name);
     if (!group) {
         group = (GLMgroup*)malloc(sizeof(GLMgroup));
-        group->name = _strdup(name);
+        group->name = strdup(name);
         group->material = 0;
         group->numtriangles = 0;
         group->triangles = NULL;
@@ -235,7 +235,7 @@ glmDirName(char* path)
     char* dir;
     char* s;
     
-    dir = _strdup(path);
+    dir = strdup(path);
     
     s = strrchr(dir, '/');
     if (s)
@@ -281,7 +281,7 @@ int glmFindOrAddTexture(GLMmodel* model, char* name)
 
     model->numtextures++;
     model->textures = (GLMtexture*)realloc(model->textures, sizeof(GLMtexture)*model->numtextures);
-    model->textures[model->numtextures-1].name = _strdup(numefis);
+    model->textures[model->numtextures-1].name = strdup(numefis);
     model->textures[model->numtextures-1].id = glmLoadTexture(filename, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE, &width, &height);
     model->textures[model->numtextures-1].width = width;
     model->textures[model->numtextures-1].height = height;
@@ -389,7 +389,7 @@ glmReadMTL(GLMmodel* model, char* name)
         model->materials[i].textureID = -1;
 		model->materials[i].textureName = NULL;
     }
-    model->materials[0].name = _strdup("default");
+    model->materials[0].name = strdup("default");
     
     /* now, read in the data */
     nummaterials = 0;
@@ -403,7 +403,7 @@ glmReadMTL(GLMmodel* model, char* name)
             fgets(buf, sizeof(buf), file);
             sscanf(buf, "%s %s", buf, buf);
             nummaterials++;
-            model->materials[nummaterials].name = _strdup(buf);
+            model->materials[nummaterials].name = strdup(buf);
             break;
         case 'N':
             if (buf[1]!='s') break;
@@ -455,7 +455,7 @@ glmReadMTL(GLMmodel* model, char* name)
             // search for texture
             filename = (char *)malloc(FILENAME_MAX);
             fgets(filename, FILENAME_MAX, file);
-            model->materials[nummaterials].textureName = _strdup(filename);
+            model->materials[nummaterials].textureName = strdup(filename);
             free(filename);
             if(strncmp(buf, "map_Kd", 6) == 0) 
 			{			
@@ -587,7 +587,7 @@ static GLvoid glmFirstPass(GLMmodel* model, FILE* file)
             case 'm': //mtllib
                 fgets(buf, sizeof(buf), file);
                 sscanf(buf, "%s %s", buf, buf);
-                model->mtllibname = _strdup(buf);
+                model->mtllibname = strdup(buf);
                 glmReadMTL(model, buf);
                 break;
             case 'u': //usemtl
@@ -1441,7 +1441,7 @@ GLMmodel* glmReadOBJ(char* filename)
     
     /* allocate a new model */
     model = (GLMmodel*)malloc(sizeof(GLMmodel));
-    model->pathname    = _strdup(filename);
+    model->pathname    = strdup(filename);
     model->mtllibname    = NULL;
     model->numvertices   = 0;
     model->vertices    = NULL;
@@ -1712,10 +1712,18 @@ GLvoid glmDraw(GLMmodel* model, GLuint mode)
 }
 GLvoid glmDraw(GLMmodel* model, GLuint mode,char *drawonly)
 {
+	/*
     static GLuint i;
     static GLMgroup* group;
     static GLMtriangle* triangle;
     static GLMmaterial* material;
+    */
+    GLuint i;
+    GLMgroup* group;
+    GLMtriangle* triangle;
+    GLMmaterial* material;
+
+
     GLuint textureID;
     
     assert(model);
