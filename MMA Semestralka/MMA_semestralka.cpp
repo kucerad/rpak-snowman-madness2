@@ -103,7 +103,6 @@ void nactiSoubor(){
 	}
 }
 
-
 //nastaveni textury
 void setTexture(GLuint ID, CImage* image) {
 	glBindTexture(GL_TEXTURE_2D, ID);
@@ -1227,7 +1226,6 @@ int main(int argc, char **argv) {
 	CAVEExit();
 	return 0;
 #else 
-  glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
   glutInitWindowSize(WIDTH, HEIGHT);
 
