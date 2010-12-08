@@ -4,6 +4,7 @@
 #define __SCENENODE_H
 
 #include <vector>
+#include <cstring>
 
 
 class CSceneNode {

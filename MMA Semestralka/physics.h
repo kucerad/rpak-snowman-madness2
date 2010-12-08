@@ -49,4 +49,4 @@ double random(int min, int max) {
 	return rand()%(max-min-2)-(max-1) + rand()%100*0.01;
 } 
 
-#endif __PHYSICS
+#endif //__PHYSICS
