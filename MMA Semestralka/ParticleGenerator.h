@@ -1,7 +1,7 @@
 #ifndef __PARTICLEGEN
 #define __PARTICLEGEN
 #include "Vector.h"
-#include "Particle.h"
+#include "particle.h"
 #include "physics.h"
 
 typedef CVector3D vec;
