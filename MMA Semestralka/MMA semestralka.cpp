@@ -585,6 +585,33 @@ void Idle(void) {
 #endif
 }
 
+#if CAVEMOD
+void frameFunc()
+{
+  if (CAVEDistribMaster()) {
+//  	std::cout<<"mastaaa"<<std::endl;
+	static float prevtime = 0;
+	float t = CAVEGetTime();
+	float dt = t - prevtime;
+	prevtime=t;
+	float jx = CAVE_JOYSTICK_X;
+	float jy = CAVE_JOYSTICK_Y;
+	float _speed_ = 5.0f;
+	if (fabs(jy)>0.2) {
+	float wand[3];
+	CAVEGetVector(CAVE_WAND_FRONT,wand);
+	CAVENavTranslate(wand[0]*jy*dt*_speed_,
+			wand[1]*jy*dt*_speed_,
+			wand[2]*jy*dt*_speed_);
+	}
+	if (fabs(jx) > 0.2) {
+	CAVENavRot(-jx*90*dt,'y');
+	}
+	CAVEDisplayBarrier();
+  }
+}
+#endif
+
 void Display(void) {
 #if CAVEMOD
   // do something and draw...
@@ -1107,20 +1134,24 @@ int main(int argc, char **argv) {
 
 	CAVEConfigure(&argc,argv,NULL);
 	CAVEInitApplication((CAVECALLBACK)InitGL,0);
-	CAVEDisplay((CAVECALLBACK)DrawGLScene,0);
+	CAVEDisplay((CAVECALLBACK)Display,0);
+
+// zavola se jednou pro vsechny vlakna, nebo jednou pro kazde vlakno?????
 	CAVEFrameFunction((CAVECALLBACK)frameFunc,0);
 	CAVEInit();
+	
 	std::cout << "Starting up main loop" << std::endl;	
  	if (CAVEDistribMaster()) 
 		while (!CAVEgetbutton(CAVE_ESCKEY)) {
 			// catch inputs
-
-			// update all
-
+				
+			// update all - or in FRAME_FUNCTION????!!!!
+				Idle();
 			CAVEUSleep(10);
 		}
 	else while (!CAVESync->Quit) CAVEUSleep(15);
 	std::cout<< "Cleaning up." << std::endl;
+	timer.Stop();
 	CAVEExit();
 	return 0;
 #else 
