@@ -447,11 +447,20 @@ void prepniMlhu(void) {
 void hodKouli() {
 	if (snehoveKoule.size()<pocet_kouli) {
 		CVector3D p(pozice[0], pozice[1], pozice[2]);
-		Koule k(p+smerPohledu*4,smerPohledu, RYCHLOST_KOULE, (random(-15,15)/15)*0.05+0.5);
+		Koule k(p+smerPohledu*4,smerPohledu, RYCHLOST_KOULE, (random(-15,15)/15)*0.05+velikost_koule);
 		snehoveKoule.push_back(k);
-		printf("Smer pohledu: ");
-				smerPohledu.printOut();
-				printf("\n");
+	}
+}
+
+void zmen_zbran() {
+	if (velikost_koule==0.5) {
+		velikost_koule = 0.1;
+		barva_koule = 17;
+		RYCHLOST_KOULE += 1.0;
+	} else {
+		velikost_koule = 0.5;
+		barva_koule = 16;
+		RYCHLOST_KOULE -= 1.0;
 	}
 }
 
@@ -557,7 +566,7 @@ void Idle(void) {
 		for(unsigned int i=0; i<snehoveKoule.size(); i++) {
 		  snehoveKoule[i].update();
 		  if (snehoveKoule[i].koliduje()) { //pokud koliduje
-			  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, snehoveKoule[i].polomer);
+			  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, 0.5);
 			  kolize.push_back(k);
 			  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
 		  }
@@ -889,6 +898,10 @@ void myKeyboard (unsigned char key, int x, int y) {
 	case 'p':
 	case 'P':
 		pause2=!pause2;
+	  break;
+	case 't':
+	case 'T':
+		zmen_zbran();
 	  break;
 	case 32: 
 		hodKouli();

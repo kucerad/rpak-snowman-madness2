@@ -17,10 +17,10 @@ public:
 
 	//vykresli vrzenou kouli
 	void vykreslit(void) {
-		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[16]);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[16]);
-		glMaterialfv(GL_FRONT, GL_SPECULAR, specular[16]);
-		glMaterialf(GL_FRONT, GL_SHININESS, shininess[16]);
+		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[barva_koule]);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[barva_koule]);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, specular[barva_koule]);
+		glMaterialf(GL_FRONT, GL_SHININESS, shininess[barva_koule]);
 
 		glPushMatrix();
 		glEnable(GL_LIGHTING);
