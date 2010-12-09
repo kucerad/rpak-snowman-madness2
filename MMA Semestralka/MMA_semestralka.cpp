@@ -11,7 +11,7 @@
 #include "TransformNode.h"
 #include "Image.h"
 #include "TextureLoader.h"
-#include "materials.h"
+#include "Materials.h"
 
 #include "physics.h"
 #include "switches.h"
