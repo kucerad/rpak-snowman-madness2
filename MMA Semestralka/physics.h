@@ -11,30 +11,30 @@
 
 #define DEG_TO_RAD (3.14159/180.0) // konstanta pro prevod stupnu na radiany
 
-double RYCHLOST_KOULE = 0.7; //rychlost, jakou ma na pocatku vrzena koule
+extern double RYCHLOST_KOULE; //rychlost, jakou ma na pocatku vrzena koule
 
 // nastaveni fyziky
-CVector3D	GRAVITACE(0.0, -9.81, 0.0);
-CVector3D	VITR(0.0,0.0,1.0);
-double		HUSTOTA_PROSTREDI = 0.6;
-double		KOEF_ODPORU = 0.6;
-double		KOEF_TRENI = 0.3;
-double		dt = 0.001;
-double		EPSILON = 0.00000001;
-CVector3D	VEPSILON(EPSILON);
-double		PI = 3.14159265;
-double 		PI_2 = PI/2;
+extern CVector3D	GRAVITACE;
+extern CVector3D	VITR;
+extern double		HUSTOTA_PROSTREDI;
+extern double		KOEF_ODPORU;
+extern double		KOEF_TRENI;
+extern double		dt;
+extern double		EPSILON;
+extern CVector3D	VEPSILON;
+extern double		PI;
+extern double 		PI_2;
 
 //parametry kouli
-float velikost_koule = 0.5;
-int barva_koule = 16;
-double velikost_zabiteho = 1;
+extern float velikost_koule;
+extern int barva_koule;
+extern double velikost_zabiteho;
 
-CTimer timer;
+extern CTimer timer;
 
-int randSeed = 0;
-int r_s = 0;
-double u(0), v(0);
+extern int randSeed;
+extern int r_s;
+extern double u, v;
 
 //funkce pro generovani nahodnych cisel
 inline double AKrandom(double min, double max){
@@ -50,7 +50,7 @@ inline double AKrandom(double min, double max){
 };
 
 //funkce pro generovani nahodnych cisel
-double random(int min, int max) {
+inline double random(int min, int max) {
 	return rand()%(max-min-2)-(max-1) + rand()%100*0.01;
 } 
 

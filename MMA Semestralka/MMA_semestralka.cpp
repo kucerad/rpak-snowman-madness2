@@ -4,8 +4,6 @@
 #endif
 
 #include <stdarg.h>
-#include "physics.h"
-#include "switches.h"
 #include <math.h>
 #include "common.h"
 #include "SceneNode.h"
@@ -13,8 +11,10 @@
 #include "TransformNode.h"
 #include "Image.h"
 #include "TextureLoader.h"
+#include "materials.h"
 
-#include "materials.inc"
+#include "physics.h"
+#include "switches.h"
 
 //id textur
 GLuint textureIDs[10];
@@ -299,6 +299,7 @@ void kresliPodstavu(void) {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[9]);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specular[9]);
 	glMaterialf(GL_FRONT, GL_SHININESS, shininess[9]);
+	glColor3f(1.0,1.0,1.0);
 	glutSolidCube(1.0);
 	glDisable(GL_LIGHTING);
 }
@@ -455,7 +456,7 @@ void hodKouli() {
 
 void zmen_zbran() {
 	if (velikost_koule==0.5) {
-		velikost_koule = 0.1;
+		velikost_koule = 0.17;
 		barva_koule = 17;
 		RYCHLOST_KOULE += 1.0;
 	} else {
@@ -876,8 +877,8 @@ void myKeyboard (unsigned char key, int x, int y) {
 	case '4': 
 		prepniWalkmode();
       break;
-	case 'k': 
-	case 'K':
+	case 'n': 
+	case 'N':
 		prepniSlunce();
 		prepniBaterku();
       break;
@@ -885,8 +886,8 @@ void myKeyboard (unsigned char key, int x, int y) {
 	case 'M':
 		prepniMlhu();
       break;
-	case 'n': 
-	case 'N':
+	case 'o': 
+	case 'O':
 		snezi = !snezi;
       break;
 	case 'b':
@@ -897,8 +898,8 @@ void myKeyboard (unsigned char key, int x, int y) {
 	case 'P':
 		pause2=!pause2;
 	  break;
-	case 't':
-	case 'T':
+	case 'e':
+	case 'E':
 		zmen_zbran();
 	  break;
 	case 32: 
