@@ -203,6 +203,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Snehulak.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TextureLoader.cpp"
 				>
 			</File>
