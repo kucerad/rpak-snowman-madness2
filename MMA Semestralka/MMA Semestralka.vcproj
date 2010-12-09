@@ -191,6 +191,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Materials.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Matrix.cpp"
 				>
 			</File>
@@ -199,7 +203,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\physics.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SceneNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Snehulak.cpp"
 				>
 			</File>
 			<File
@@ -242,6 +254,10 @@
 			</File>
 			<File
 				RelativePath=".\koule.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Materials.h"
 				>
 			</File>
 			<File

@@ -153,7 +153,7 @@ public:
 				glBegin(GL_LINES);
 					glColor3f(0.f, 1.0f, 0.f);
 					glVertex3d(0.0, 0.0, 0.0);
-					glVertex3d(Fn[X]*10, Fn[Y]*10, Fn[Z]*10);
+					glVertex3d(Fn[X], Fn[Y], Fn[Z]);
 				glEnd();
 				
 				// Side Force YELLOW
