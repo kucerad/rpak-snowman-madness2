@@ -119,7 +119,7 @@ void setTexture(GLuint ID, CImage* image) {
 void initTextures() {
  CTextureLoader *textureLoader = new CTextureLoader();
  CImage *image = new CImage();
-	glGenTextures(10, textureIDs);
+	glGenTextures(11, textureIDs);
 
 	if (textureLoader->Load("data/iceflow_front.tga", image) != false) {
 		setTexture(textureIDs[0], image);
@@ -147,7 +147,7 @@ void initTextures() {
 
 	// obrazovky
 	char filename[128];
-	for(int i=1; i<4; i++) {
+	for(int i=1; i<5; i++) {
 		sprintf(filename, "data/panel%i.tga", i);
 		if (textureLoader->Load(filename, image) != false) {
 			setTexture(textureIDs[5+i], image);
@@ -155,7 +155,7 @@ void initTextures() {
 	}
 	//textura vlocky
 	if (textureLoader->Load("data/snowflake.tga", image) != false) {
-		setTexture(textureIDs[9], image);
+		setTexture(textureIDs[10], image);
 	}
   delete image;
   delete textureLoader;
@@ -546,7 +546,7 @@ void Idle(void) {
 		sunAngle += sunAngleSpeed; //posune slunce
 		if(sunAngle > 180.0) sunAngle = 0.0;
 		
-		if(whichFrame >= 9) {whichFrame = 6;}
+		if(whichFrame >= 10) {whichFrame = 6;}
 		whichFrame+=0.005;
 
 		u += random(-2,2);
