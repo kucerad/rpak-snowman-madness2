@@ -960,7 +960,7 @@ void myMotion(int x, int y)	{
 
 //inicializace sveta pri startu
 void initWorld(void) {
-	srand(time(NULL));		
+	srand(1);		
 	nactiSoubor();
 	Snehulak s1(CVector3D(6.0, -0.2, -5.0), CVector3D(0.99, 0.8, 0.6), CVector3D(1, 2.4, 3.5));
 	Snehulak s2(CVector3D(-7.0, -0.2, 7.0), CVector3D(1.5,  1.2, 0.99), CVector3D(1.5, 3.6, 5.3));
