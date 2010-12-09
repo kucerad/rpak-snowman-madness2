@@ -38,9 +38,9 @@ extern double u, v;
 
 //funkce pro generovani nahodnych cisel
 inline double AKrandom(double min, double max){
-	randSeed = int(timer.RealTime()*100000);
+	//randSeed = int(timer.RealTime()*100000);
 	//printf("randseed=%i\n", randSeed);
-	srand(randSeed*r_s);
+	//srand(randSeed*r_s);
 	//printf("rand = %i\n", rand());
 	double ran = double(rand());
 	//printf("ran=%f\n", ran);
