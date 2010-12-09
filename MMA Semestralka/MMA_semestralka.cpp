@@ -11,9 +11,10 @@
 #include "SceneNode.h"
 #include "GeometryNode.h"
 #include "TransformNode.h"
-#include "materials.inc"
 #include "Image.h"
 #include "TextureLoader.h"
+
+#include "materials.inc"
 
 //id textur
 GLuint textureIDs[10];
@@ -566,7 +567,8 @@ void Idle(void) {
 		for(unsigned int i=0; i<snehoveKoule.size(); i++) {
 		  snehoveKoule[i].update();
 		  if (snehoveKoule[i].koliduje()) { //pokud koliduje
-			  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, 0.5);
+
+			  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, velikost_zabiteho/2);
 			  kolize.push_back(k);
 			  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
 		  }
@@ -974,23 +976,21 @@ void initWorld(void) {
 
 CPodstavecNode * podstavec = new CPodstavecNode();
 	CTransformNode * podstavec2_p = new CTransformNode(); //PODSTAVEC PANELU
-	podstavec2_p->Translate(-3.5, 0.5, 0.0);
-	podstavec2_p->Rotate(-1, 0.0, 0.0, 1.0);
-	podstavec2_p->Scale(0.2, 1.0, 1.0);
+	podstavec2_p->Translate(0.0, 0.5, -3.5);
+	podstavec2_p->Scale(1.0, 1.0, 0.2);
 	podstavec2_p->AddChildNode(podstavec);
 	rootNode_p->AddChildNode(podstavec2_p);
 
 	CTransformNode * podstavec3_p = new CTransformNode(); //PANEL
-	podstavec3_p->Translate(-3.5, 1.0, 0.0);
-	podstavec3_p->Rotate(-45, 0.0, 0.0, 1.0);
-	podstavec3_p->Scale(0.5*PANEL_SIZE_Y, 0.2, PANEL_SIZE_X);
+	podstavec3_p->Translate(0.0, 1.0, -3.5);
+	podstavec3_p->Rotate(45, 1.0, 0.0, 0.0);
+	podstavec3_p->Scale(PANEL_SIZE_Y, 0.2, 0.5*PANEL_SIZE_X);
 	podstavec3_p->AddChildNode(podstavec);
 	rootNode_p->AddChildNode(podstavec3_p);
 
 CPanelNode * panel = new CPanelNode(); // OBRAZOVKA INFORMACNIHO PANELU
 	CTransformNode * panel_p = new CTransformNode();
-	panel_p->Translate(-3.07, 0.72, 0.0);
-	panel_p->Rotate(90, 0.0, 1.0, 0.0);
+	panel_p->Translate(0.0, 0.72, -3.07);
 	panel_p->Rotate(-45, 1.0, 0.0, 0.0);
 	panel_p->Scale(0.5, 0.5, 1.0);
 	panel_p->AddChildNode(panel);
@@ -1000,33 +1000,60 @@ COBJNode *bench = new COBJNode();
 	bench->Load(BENCH_FILE_NAME);
 
 	CTransformNode * bench1_p = new CTransformNode();
-	bench1_p->Translate(2.0, 0.78, -1.0);
-	bench1_p->Rotate(-90.0, 0.0, 1.0, 0.0);
+	bench1_p->Translate(0.0, 0.78, 3.0);
+	bench1_p->Rotate(180.0, 0.0, 1.0, 0.0);
 	bench1_p->Scale(2.0, 2.0, 2.0);
 	bench1_p->AddChildNode(bench);
 	rootNode_p->AddChildNode(bench1_p);
+
+	CTransformNode * bench2_p = new CTransformNode();
+	bench2_p->Translate(-9.0, 0.78, 6.0);
+	bench2_p->Rotate(90.0, 0.0, 1.0, 0.0);
+	bench2_p->Scale(2.0, 2.0, 2.0);
+	bench2_p->AddChildNode(bench);
+	rootNode_p->AddChildNode(bench2_p);
+
+	CTransformNode * bench3_p = new CTransformNode();
+	bench3_p->Translate(-9.0, 0.78, 3.0);
+	bench3_p->Rotate(90.0, 0.0, 1.0, 0.0);
+	bench3_p->Scale(2.0, 2.0, 2.0);
+	bench3_p->AddChildNode(bench);
+	rootNode_p->AddChildNode(bench3_p);
 
 COBJNode *strom = new COBJNode();
 	strom->Load(STROM_FILE_NAME);
 
 	CTransformNode * strom_p1 = new CTransformNode();
-	strom_p1->Translate(-12.0, 5.0, 4.0);
+	strom_p1->Translate(-4.0, 5.0, -12.0);
 	strom_p1->Scale(8.0, 10.0, 8.0);
 	strom_p1->AddChildNode(strom);
 	rootNode_p->AddChildNode(strom_p1);
 
 	CTransformNode * strom_p2 = new CTransformNode();
-	strom_p2->Translate(-12.0, 3.0, -10.0);
+	strom_p2->Translate(10.0, 3.0, -12.0);
 	strom_p2->Scale(4.0, 6.0, 4.0);
 	strom_p2->AddChildNode(strom);
 	rootNode_p->AddChildNode(strom_p2);
 
 	CTransformNode * strom_p3 = new CTransformNode();
-	strom_p3->Translate(4.0, 1.0, 3.0);
+	strom_p3->Translate(2.4, 1.0, 3.0);
 	strom_p3->Scale(3.0, 2.0, 3.0);
 	strom_p3->Rotate(60,0,1,0);
 	strom_p3->AddChildNode(strom);
 	rootNode_p->AddChildNode(strom_p3);
+
+	CTransformNode * strom_p4 = new CTransformNode();
+	strom_p4->Translate(1.2, 2.0, 4.0);
+	strom_p4->Scale(5.0, 4.0, 5.0);
+	strom_p4->AddChildNode(strom);
+	rootNode_p->AddChildNode(strom_p4);
+
+	CTransformNode * strom_p5 = new CTransformNode();
+	strom_p5->Translate(-10.0, 4.5, 5.0);
+	strom_p5->Scale(7.0, 9.0, 7.0);
+	strom_p5->AddChildNode(strom);
+	rootNode_p->AddChildNode(strom_p5);
+
 
 CZemeNode * zeme = new CZemeNode();
 	CTransformNode * zeme_p = new CTransformNode();
