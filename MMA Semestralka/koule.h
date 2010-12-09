@@ -88,11 +88,12 @@ public:
 			if (snehulaci[i].koliduje(pozice, polomer)) {
 				//kdyz koliduje, vygeneruji se vlocky a zmeni se pozice snehulaka
 				pGen.position = pozice;
-				pWorld.add(5);
+				pWorld.add(1);
 				double v = random(5,15);
 				double u = random(0,360);
 				snehulaci[i].pozice[X] = cos(u)*v;
 				snehulaci[i].pozice[Z] = sin(u)*v;
+				velikost_zabiteho = snehulaci[i].polomer[0];
 				return true;
 			}
 		}

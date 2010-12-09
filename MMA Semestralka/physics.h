@@ -1,5 +1,5 @@
-#ifndef __PHYSICS
-#define __PHYSICS
+#ifndef __PHYSICS_H
+#define __PHYSICS_H
 
 #include "Vector.h"
 #include "timer.h"
@@ -28,7 +28,7 @@ double 		PI_2 = PI/2;
 //parametry kouli
 float velikost_koule = 0.5;
 int barva_koule = 16;
-
+double velikost_zabiteho = 1;
 
 CTimer timer;
 
