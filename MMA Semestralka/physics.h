@@ -25,6 +25,11 @@ CVector3D	VEPSILON(EPSILON);
 double		PI = 3.14159265;
 double 		PI_2 = PI/2;
 
+//parametry kouli
+float velikost_koule = 0.5;
+int barva_koule = 16;
+
+
 CTimer timer;
 
 int randSeed = 0;
