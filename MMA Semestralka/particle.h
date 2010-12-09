@@ -183,7 +183,7 @@ public:
 				// povoleni michani barev
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
-				glBindTexture(GL_TEXTURE_2D, textureIDs[9]);
+				glBindTexture(GL_TEXTURE_2D, textureIDs[10]);
 				glBegin(GL_QUADS);
 				  glTexCoord2f(0.0, 0.0);
 				  glVertex3d(-s2, 0.0, -s2);
