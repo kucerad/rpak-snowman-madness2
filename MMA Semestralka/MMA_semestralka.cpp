@@ -567,7 +567,6 @@ void Idle(void) {
 		for(unsigned int i=0; i<snehoveKoule.size(); i++) {
 		  snehoveKoule[i].update();
 		  if (snehoveKoule[i].koliduje()) { //pokud koliduje
-
 			  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, velikost_zabiteho/2);
 			  kolize.push_back(k);
 			  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
@@ -880,9 +879,6 @@ void myKeyboard (unsigned char key, int x, int y) {
 	case 'k': 
 	case 'K':
 		prepniSlunce();
-      break;
-	case 'l': 
-	case 'L':
 		prepniBaterku();
       break;
 	case 'm': 
