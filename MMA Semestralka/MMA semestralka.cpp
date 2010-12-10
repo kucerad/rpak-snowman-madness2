@@ -1,4 +1,4 @@
-#define CAVEMOD 0
+#define CAVEMOD 1
 #if CAVEMOD
 	#include <cave_ogl.h>
 #endif
@@ -11,7 +11,7 @@
 #include "GeometryNode.h"
 #include "TransformNode.h"
 #include "materials.inc"
-#include "image.h"
+#include "Image.h"
 #include "TextureLoader.h"
 
 //id textur
@@ -579,8 +579,9 @@ void Idle(void) {
 	if (nahoru)		{otocNahoru();}
 	if (dolu)		{otocDolu();}
 
-	glutWarpPointer(WIDTH/2,HEIGHT/2);
+	
 #if !CAVEMOD
+	glutWarpPointer(WIDTH/2,HEIGHT/2);
 	glutPostRedisplay();
 #endif
 }
@@ -1044,8 +1045,10 @@ CScoreNode *score = new CScoreNode();
 void initOther(void){
 	glEnable(GL_LIGHT0);
 	initTextures();
+#if !CAVEMOD
 	glutSetCursor(GLUT_CURSOR_NONE); //skryje kurzor
 	glutWarpPointer(WIDTH/2,HEIGHT/2); //nastavi kurzor na stred okna
+#endif
 }
 //prirazeni akci k jednotlivym polozkam
 void myMenu(int polozkaMenu){ 
@@ -1112,7 +1115,7 @@ void menu(void) {
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-void initGL(void) {
+void InitGL(void) {
   glEnable(GL_DEPTH_TEST);
   //glDepthFunc(GL_LEQUAL);
   glDepthFunc(GL_LESS);
@@ -1134,7 +1137,7 @@ int main(int argc, char **argv) {
 
 	CAVEConfigure(&argc,argv,NULL);
 	CAVEInitApplication((CAVECALLBACK)InitGL,0);
-	CAVEDisplay((CAVECALLBACK)Display,0);
+	CAVEDisplay((CAVECALLBACK)DisplayGL,0);
 
 // zavola se jednou pro vsechny vlakna, nebo jednou pro kazde vlakno?????
 	CAVEFrameFunction((CAVECALLBACK)frameFunc,0);

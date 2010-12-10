@@ -39,6 +39,8 @@ std::vector<Koule> kolize;
 float vyska_postavy = 1.7;			//vyska avatara
 float pocet_kouli;
 
+int randseed = 1;
+
 static CVector3D pozice(0.0, vyska_postavy, 0.0); //pozice avatara pri startu aplikace
 static CVector3D smerPohledu(-1.0, 0.0, 0.0);
 static CVector3D smerPohleduZ(0.0, 0.0, -1.0);	//promenna pro ulozeni smeru, kterym se avatar diva
@@ -543,6 +545,24 @@ void Reshape(int w, int h) {
 }
 // update sceny
 void Idle(void) {
+#if CAVEMOD
+// synchronizace randomu
+	if (CAVEMasterDisplay()){
+		// once on each distributed machine
+
+		if (CAVEDistribMaster()){
+			// server
+			CAVEDistribWrite(123, &randseed, sizeof(randseed));
+		} else {
+			// client
+			CAVEDistribRead(123, &randseed, sizeof(randseed));
+			srand(randseed);	
+		}
+		CAVEDistribBarrier(123);
+	}
+#endif
+
+
 	if (!pause2) {
 		sunAngle += sunAngleSpeed; //posune slunce
 		if(sunAngle > 180.0) sunAngle = 0.0;
@@ -960,7 +980,7 @@ void myMotion(int x, int y)	{
 
 //inicializace sveta pri startu
 void initWorld(void) {
-	srand(1);		
+	srand(randseed);		
 	nactiSoubor();
 	Snehulak s1(CVector3D(6.0, -0.2, -5.0), CVector3D(0.99, 0.8, 0.6), CVector3D(1, 2.4, 3.5));
 	Snehulak s2(CVector3D(-7.0, -0.2, 7.0), CVector3D(1.5,  1.2, 0.99), CVector3D(1.5, 3.6, 5.3));
@@ -1248,7 +1268,11 @@ int main(int argc, char **argv) {
 	CAVEFrameFunction((CAVECALLBACK)frameFunc,0);
 	CAVEInit();
 	CAVENavTranslate(0.0,-6.0+vyska_postavy,0.0);
-	std::cout << "Starting up main loop" << std::endl;	
+	std::cout << "Starting up main loop" << std::endl;
+	if (CAVEMasterDisplay()){
+		// open connection
+		CAVEDistribOpenConnection(123);
+	}
  	if (CAVEDistribMaster()) 
 		while (!CAVEgetbutton(CAVE_ESCKEY)) {
 			// catch inputs
@@ -1259,6 +1283,11 @@ int main(int argc, char **argv) {
 		}
 	else while (!CAVESync->Quit) CAVEUSleep(15);
 	std::cout<< "Cleaning up." << std::endl;
+	if (CAVEMasterDisplay()){
+		// open connection
+		CAVEDistribCloseConnection(123);
+	}
+	
 	timer.Stop();
 	CAVEExit();
 	return 0;
