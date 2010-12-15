@@ -1,5 +1,5 @@
 //zapnuti cave modu
-#define CAVEMOD 0
+//define CAVEMOD 0
 #if CAVEMOD
 	#include <cave_ogl.h>
 #endif
@@ -32,7 +32,7 @@ std::vector<Snehulak> snehulaci; //vektor snehulaku ve scene
 #include "koule.h"
 std::vector<Koule> snehoveKoule; //vektor vrzenych kouli
 std::vector<Koule> kolize;		 //vektor kolizi - kouli na zemi po snehulacich
-
+typedef CVector3D vec;
 #define WIDTH 800				// sirka okna
 #define HEIGHT 680				// vyska okna
 
@@ -241,12 +241,8 @@ void kresliSkore(void) {
 	glPushAttrib(GL_LINE_BIT);
 	  glLineWidth(5.0);
 	  int score = kolize.size();
-	  char sc [10] = "Score:  ";
-	  sc[8] = char(score % 10 + 48);
-	  sc[7] = char(int(score/10) + 48);
-	  sc[6] = char(int(score/100) + 48);
-	  strokeOutput(sc);
-    glPopAttrib();
+	  strokeOutput("Skore: %i", score);
+	  glPopAttrib();
 }
 
 //nakresli plochu z tringlestripu
@@ -388,8 +384,16 @@ void baterka(void) {
 	GLfloat poziceSvetla[] = {pozice[0], pozice[1], pozice[2], 1.0f};
     glLightfv(GL_LIGHT1, GL_POSITION, poziceSvetla);
 
+  //  GLfloat smerSvetla[] = {cos(uhelPohledu*DEG_TO_RAD), tan(beta*DEG_TO_RAD), sin(uhelPohledu*DEG_TO_RAD), 1.0f};
+#if CAVEMOD
+    GLfloat smerSvetla[] = {smerPohledu[0], smerPohledu[1],smerPohledu[2], 1.0f};
+
+#else
     GLfloat smerSvetla[] = {cos(uhelPohledu*DEG_TO_RAD), tan(beta*DEG_TO_RAD), sin(uhelPohledu*DEG_TO_RAD), 1.0f};
-    glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, smerSvetla);	
+
+#endif
+    glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, smerSvetla);
+
 }
 
 //zapne nebo vypne baterku - light1
@@ -456,22 +460,30 @@ void prepniMlhu(void) {
 void hodKouli() {
 	if (snehoveKoule.size()<pocet_kouli) {
 		CVector3D p(pozice[0], pozice[1], pozice[2]);
-		Koule k(p+smerPohledu*4,smerPohledu, RYCHLOST_KOULE, (random(-15,15)/15)*0.05+velikost_koule);
-		snehoveKoule.push_back(k);
+		if (zbran == 0){
+			// velka pomala
+			Koule k(p+smerPohledu*4,smerPohledu+vec(0.0, 0.1, 0.0), RYCHLOST_KOULE, (random(-15,15)/15)*0.05+velikost_koule0, 16);
+			snehoveKoule.push_back(k);
+		} else if (zbran ==1) {
+			// mala rychla
+			Koule k(p+smerPohledu*4,smerPohledu+vec(0.0, 0.1, 0.0), RYCHLOST_KOULE+0.8, (random(-15,15)/15)*0.05+velikost_koule1, 17);
+			snehoveKoule.push_back(k);
+		}
+
 	}
 }
+bool outTest(CVector3D &position){
+	if (position[0] < WORLD_SIZE_2 && position[0] > -WORLD_SIZE_2 && position[2] < WORLD_SIZE_2 && position[2] > -WORLD_SIZE_2 && position[1] < WORLD_HEIGHT && position[1] > 0) {
+		return false;
+	}
+	else {
+		return true;
+	}
 
+}
 //prepina zbran mezi snehovou kouli a uhlim
 void zmen_zbran() {
-	if (velikost_koule==0.5) {
-		velikost_koule = 0.17;
-		barva_koule = 17;
-		RYCHLOST_KOULE += 1.0;
-	} else {
-		velikost_koule = 0.5;
-		barva_koule = 16;
-		RYCHLOST_KOULE -= 1.0;
-	}
+	zbran = (zbran+1)%2;
 }
 
 //nastaveni parametru pro prvni staticky pohled
@@ -552,20 +564,36 @@ void Reshape(int w, int h) {
 // update sceny
 void Idle(void) {
 #if CAVEMOD
+
+
 // synchronizace nahodneho generovani cisel - funkce random
 	if (CAVEMasterDisplay()){
 		// once on each distributed machine
 
 		if (CAVEDistribMaster()){
 			// server
-			CAVEDistribWrite(123, &randseed, sizeof(randseed));
+			CAVEDistribWrite(123, &++randseed, sizeof(randseed));
 		} else {
 			// client
 			CAVEDistribRead(123, &randseed, sizeof(randseed));
-			srand(randseed);	
+//			srand(randseed);
 		}
 		CAVEDistribBarrier(123);
-	}
+		srand(randseed);
+		static float prevtime = 0;
+		float t = CAVEGetTime();
+		float dt = t - prevtime;
+		prevtime=t;
+		if (CAVEDistribMaster()){
+			// server
+			CAVEDistribWrite(123, &dt, sizeof(dt));
+		} else {
+					// client
+			CAVEDistribRead(123, &dt, sizeof(dt));
+		}
+
+
+
 #endif
 
 	if (!pause2) {
@@ -583,7 +611,7 @@ void Idle(void) {
 
 		if (snezi) {
 			//pokud snezi, jsou pridany nove vlocky
-			pWorld.addRandom(2);
+			pWorld.addRandom(5);
 			//aktualizace particlu
 			pWorld.update(timer.RealTime());
 		}
@@ -623,6 +651,9 @@ void Idle(void) {
 #if !CAVEMOD
 	glutWarpPointer(WIDTH/2,HEIGHT/2);
 	glutPostRedisplay();
+#else
+	}
+
 #endif
 }
 
@@ -630,24 +661,27 @@ void Idle(void) {
 #if CAVEMOD
 void frameFunc()
 {
-  if (CAVEDistribMaster()) {
+
+  if (CAVEMasterDisplay()) {
 	//std::cout << "X: " << (CAVEgetbutton(CAVE_XKEY)?"O":"X") << std::endl;
-	static float prevtime = 0;
+	/*static float prevtime = 0;
 	float t = CAVEGetTime();
 	float dt = t - prevtime;
 	prevtime=t;
+	dt =0.05f;*/
 	float jx = CAVE_JOYSTICK_X;
 	float jy = CAVE_JOYSTICK_Y;
 	float _speed_ = 5.0f;
 	rychlost = 0;
 
 	if (fabs(jy)>0.2) {
-    	rychlost = jy*delka_kroku;
+    	rychlost = -jy*delka_kroku;
 	}
 
 	if (fabs(jx) > 0.2) {
-		CAVENavRot(-jx*90*dt,'y');
-		rotMatrix.Rotate(0.0,1.0,0.0, -jx*90*dt);
+		float rychlost_otaceni(15);
+		CAVENavRot(-jx*rychlost_otaceni*90*dt,'y');
+		rotMatrix.Rotate(0.0,1.0,0.0, -jx*90*rychlost_otaceni*dt);
 		smerPohledu = rotMatrix*smerPohleduZ;
 	}
 
@@ -659,6 +693,38 @@ void frameFunc()
 		rychlost=-delka_kroku;
 		//posunDozadu();
 	}
+
+	// tlacitko 3
+	if ( CAVEController->button[2] || CAVEController->button[7]) {
+			hodKouli();
+	}
+
+	if (!b1 && CAVEController->button[1]) {
+		zmen_zbran();
+		b1 = true;
+	} else if (b1 && !CAVEController->button[1]){
+		b1=false;
+
+	}
+	if (!b0 && CAVEController->button[0]) {
+		prepniSlunce();
+		prepniBaterku();
+		b0=true;
+	} else if (b0 && !CAVEController->button[0]){
+		b0=false;
+
+	}
+
+	if (!b6 && CAVEController->button[6]) {
+		debug=!debug;
+		b6=true;
+	} else if (b6 && !CAVEController->button[6]){
+		b6=false;
+
+	}
+
+
+
 	if (CAVEgetbutton(CAVE_XKEY)) {
 		hodKouli();
 	}
@@ -669,17 +735,28 @@ void frameFunc()
 		prepniSlunce();
 		prepniBaterku();
 	}
-
-	CAVENavTranslate(smerPohybu[0]*rychlost,smerPohybu[1]*rychlost,smerPohybu[2]*rychlost);
-	pozice += smerPohledu*rychlost;
-
-	CAVEDisplayBarrier();
+	CVector3D newPosition(smerPohybu[0]*rychlost, smerPohybu[1]*rychlost, smerPohybu[2]*rychlost);
+	//if (!outTest(newPosition)){
+		CAVENavTranslate(smerPohybu[0]*rychlost,smerPohybu[1]*rychlost,smerPohybu[2]*rychlost);
+		pozice += smerPohledu*rychlost;
+	//}
+	//CAVEDisplayBarrier();
   }
 
   if (CAVEMasterDisplay()) {
 	  Idle();
   }
+  if (slunceSviti) { //aktivace slunce
+	  glEnable(GL_LIGHT0);
+  } else {
+	  glDisable(GL_LIGHT0);
 
+  }
+  if (posvit) { //aktivace baterky
+	  glEnable(GL_LIGHT1);
+  } else {
+	  glDisable(GL_LIGHT1);
+  }
   CAVEDisplayBarrier();
 }
 #endif
@@ -1270,23 +1347,24 @@ int main(int argc, char **argv) {
 	CAVEInit();
 	CAVENavTranslate(0.0,-6.0+vyska_postavy,0.0);
 	std::cout << "Starting up main loop" << std::endl;
-	if (CAVEMasterDisplay()){
+	//if (CAVEMasterDisplay()){
 		// open connection
 		CAVEDistribOpenConnection(123);
-	}
+	//}
  	if (CAVEDistribMaster()) 
 		while (!CAVEgetbutton(CAVE_ESCKEY)) {
 			CAVEUSleep(10);
 		}
 	else while (!CAVESync->Quit) CAVEUSleep(15);
 	std::cout<< "Cleaning up." << std::endl;
-	if (CAVEMasterDisplay()){
-		// close connection
-		CAVEDistribCloseConnection(123);
-	}
-	
+
+
 	timer.Stop();
 	CAVEExit();
+	//if (CAVEMasterDisplay()){
+		// close connection
+		CAVEDistribCloseConnection(123);
+	//}
 	return 0;
 #else 
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
