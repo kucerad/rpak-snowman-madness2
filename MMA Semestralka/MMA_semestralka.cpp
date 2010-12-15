@@ -1,3 +1,4 @@
+//zapnuti cave modu
 #define CAVEMOD 0
 #if CAVEMOD
 	#include <cave_ogl.h>
@@ -26,35 +27,35 @@ ParticleGenerator	pGen(vec(0,5,2), vec(0,1,0));
 ParticleWorld		pWorld(&pGen);
 
 #include "Snehulak.h"
-std::vector<Snehulak> snehulaci;
+std::vector<Snehulak> snehulaci; //vektor snehulaku ve scene
 
 #include "koule.h"
-std::vector<Koule> snehoveKoule;
-std::vector<Koule> kolize;
+std::vector<Koule> snehoveKoule; //vektor vrzenych kouli
+std::vector<Koule> kolize;		 //vektor kolizi - kouli na zemi po snehulacich
 
 #define WIDTH 800				// sirka okna
 #define HEIGHT 680				// vyska okna
 
 #define SMALL_ANGLE2 1.0		//konstanta uhlu pro otaceni pohledu avatara
-float vyska_postavy = 1.7;			//vyska avatara
+float vyska_postavy = 1.7;		//vyska avatara
 float pocet_kouli;
 
 int randseed = 1;
 
 static CVector3D pozice(0.0, vyska_postavy, 0.0); //pozice avatara pri startu aplikace
-static CVector3D smerPohledu(-1.0, 0.0, 0.0);
-static CVector3D smerPohleduZ(0.0, 0.0, -1.0);	//promenna pro ulozeni smeru, kterym se avatar diva
+static CVector3D smerPohledu(-1.0, 0.0, 0.0);	//promenna pro ulozeni smeru, kterym se avatar diva
+static CVector3D smerPohleduZ(0.0, 0.0, -1.0);	//pomocna promenna pro ulozeni smeru, kterym se avatar diva v cavu
 bool walkmode=true;				// kdyz true, bude mozne prochazet scenou
 double delka_kroku;				//delka kroku
-GLdouble smerPohybu[3];			//pole pro u            wwwwwozeni smeru pohybu
+GLdouble smerPohybu[3];			//pole pro ulozeni smeru pohybu
 GLdouble uhelPohledu = -90.0;	//pocatecni uhel pohledu
 GLdouble beta = 0.0;			//uhel, pod kterym avatar pozoruje scenu
 GLdouble sunAngle = 90;			//pocatecni poloha/natoceni slunce
 double sunAngleSpeed;			//uhel udavajici rychlost obehu slunce
 
-GLdouble xm[3], ym[3]; //pole pro ulozeni poloh kurzoru
+GLdouble xm[3], ym[3];			//pole pro ulozeni poloh kurzoru pri ovladani mysi
 
-//Definice jmen uzitych pri vytvareni grafu sceny
+//definice jmen uzitych pri vytvareni grafu sceny
 #define STROM_FILE_NAME "data/strom.obj"
 #define BENCH_FILE_NAME "data/Bench.obj"
 
@@ -63,9 +64,9 @@ CSceneNode* rootNode_p = NULL; // koren grafu sceny
 //parametry pro obrazovku
 #define PANEL_SIZE_X 2
 #define PANEL_SIZE_Y 2
-static float whichFrame = 6;
+static float whichFrame = 6;	//pocatecni nastaveni snimku, ktery bude na informacnim panelu
 
-//vykresleni textu ve 3D
+//vykresleni textu ve 3D, pouzito pro skore
 void strokeOutput(char *format,...) {
 	va_list args;
 	char buffer[200], *p;
@@ -106,7 +107,7 @@ void nactiSoubor(){
 	}
 }
 
-//nastaveni textury
+//nastaveni textur
 void setTexture(GLuint ID, CImage* image) {
 	glBindTexture(GL_TEXTURE_2D, ID);
 	glTexImage2D(GL_TEXTURE_2D, 0, image->GetComponents(), image->GetWidth(), image->GetHeight(), 1, image->GetFormat(), GL_UNSIGNED_BYTE, image->GetPixels());
@@ -123,6 +124,7 @@ void initTextures() {
  CImage *image = new CImage();
 	glGenTextures(11, textureIDs);
 
+	//skybox
 	if (textureLoader->Load("data/iceflow_front.tga", image) != false) {
 		setTexture(textureIDs[0], image);
 	}
@@ -147,7 +149,7 @@ void initTextures() {
 		setTexture(textureIDs[5], image);
 	}
 
-	// obrazovky
+	// obrazovky informacniho panelu
 	char filename[128];
 	for(int i=1; i<5; i++) {
 		sprintf(filename, "data/panel%i.tga", i);
@@ -155,10 +157,12 @@ void initTextures() {
 			setTexture(textureIDs[5+i], image);
 		}
 	}
+
 	//textura vlocky
 	if (textureLoader->Load("data/snowflake.tga", image) != false) {
 		setTexture(textureIDs[10], image);
 	}
+
   delete image;
   delete textureLoader;
 }
@@ -238,9 +242,9 @@ void kresliSkore(void) {
 	  glLineWidth(5.0);
 	  int score = kolize.size();
 	  char sc [10] = "Score:  ";
-	  sc[8] = char(score % 10 +48);
-	  sc[7] = char(int(score/10) +48);
-	  sc[6] = char(int(score/100) +48);
+	  sc[8] = char(score % 10 + 48);
+	  sc[7] = char(int(score/10) + 48);
+	  sc[6] = char(int(score/100) + 48);
 	  strokeOutput(sc);
     glPopAttrib();
 }
@@ -254,6 +258,7 @@ void kresliPlochu(void) {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, zemeDiffuseColor);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specular[3]);
 	glMaterialf(GL_FRONT, GL_SHININESS, 0.0);
+
 	//pomocne promenne pri vykreslovani zeme
 	bool jedna = true; 
 	bool dva = true;			
@@ -366,7 +371,7 @@ class CSnehulakNode : public CGeometryNode {
 		sn->vykreslit();
 	}
 public:
-	Snehulak * sn;
+	Snehulak * sn; //ukazatel na snehulaka, ktery je s uzlem asociovan
 };
 
 //nastaveni parametru baterky jako light1
@@ -434,7 +439,7 @@ void mlha(void) {
     glHint(GL_FOG_HINT, GL_DONT_CARE);
 }
 
-//zapne nebo vypne zobrazeni mlhy
+//zapne nebo vypne zobrazeni mlhy, zaroven zvysi nebo snizi hustotu prostredi
 void prepniMlhu(void) { 
 	if(!zamlzeno) {
 		glEnable(GL_FOG);
@@ -447,7 +452,7 @@ void prepniMlhu(void) {
 	zamlzeno = !zamlzeno;
 }
 
-//vytvori novou kouli
+//hodi novou kouli
 void hodKouli() {
 	if (snehoveKoule.size()<pocet_kouli) {
 		CVector3D p(pozice[0], pozice[1], pozice[2]);
@@ -456,6 +461,7 @@ void hodKouli() {
 	}
 }
 
+//prepina zbran mezi snehovou kouli a uhlim
 void zmen_zbran() {
 	if (velikost_koule==0.5) {
 		velikost_koule = 0.17;
@@ -546,7 +552,7 @@ void Reshape(int w, int h) {
 // update sceny
 void Idle(void) {
 #if CAVEMOD
-// synchronizace randomu
+// synchronizace nahodneho generovani cisel - funkce random
 	if (CAVEMasterDisplay()){
 		// once on each distributed machine
 
@@ -562,14 +568,14 @@ void Idle(void) {
 	}
 #endif
 
-
 	if (!pause2) {
-		sunAngle += sunAngleSpeed; //posune slunce
+		sunAngle += sunAngleSpeed;				//posune slunce
 		if(sunAngle > 180.0) sunAngle = 0.0;
 		
-		if(whichFrame >= 10) {whichFrame = 6;}
+		if(whichFrame >= 10) {whichFrame = 6;}	
 		whichFrame+=0.005;
 
+		//zmena vetru v prostredi
 		u += random(-2,2);
         v += random(-2,2);
         CVector3D poz(5*sin(u),0.0,5*sin(v));
@@ -578,10 +584,11 @@ void Idle(void) {
 		if (snezi) {
 			//pokud snezi, jsou pridany nove vlocky
 			pWorld.addRandom(2);
-			// update particle world
+			//aktualizace particlu
 			pWorld.update(timer.RealTime());
 		}
 
+		//vypis poctu particlu ve scene
 		//std::cout << pWorld.particles.size() <<"\n";
 
 		//kontrola zasahu snehulaku nekterou z kouli
@@ -624,7 +631,7 @@ void Idle(void) {
 void frameFunc()
 {
   if (CAVEDistribMaster()) {
-//	std::cout << "X: " << (CAVEgetbutton(CAVE_XKEY)?"O":"X") << std::endl;
+	//std::cout << "X: " << (CAVEgetbutton(CAVE_XKEY)?"O":"X") << std::endl;
 	static float prevtime = 0;
 	float t = CAVEGetTime();
 	float dt = t - prevtime;
@@ -633,29 +640,15 @@ void frameFunc()
 	float jy = CAVE_JOYSTICK_Y;
 	float _speed_ = 5.0f;
 	rychlost = 0;
-	if (fabs(jy)>0.2) {
 
+	if (fabs(jy)>0.2) {
     	rychlost = jy*delka_kroku;
 	}
 
 	if (fabs(jx) > 0.2) {
-
 		CAVENavRot(-jx*90*dt,'y');
 		rotMatrix.Rotate(0.0,1.0,0.0, -jx*90*dt);
 		smerPohledu = rotMatrix*smerPohleduZ;
-
-		/*
-		 uhelPohledu += jx*90*dt;
-
-
-		  smerPohledu[0] = cos(uhelPohledu*DEG_TO_RAD)*cos(beta*DEG_TO_RAD);
-		  smerPohledu[1] = sin(beta*DEG_TO_RAD);
-		  smerPohledu[2] = sin(uhelPohledu*DEG_TO_RAD)*cos(beta*DEG_TO_RAD);
-
-		  smerPohybu[0] = cos(uhelPohledu*DEG_TO_RAD);
-		  smerPohybu[1] = 0.0;
-		  smerPohybu[2] = sin(uhelPohledu*DEG_TO_RAD);
-*/
 	}
 
 	if (CAVEgetbutton(CAVE_WKEY)) {
@@ -669,30 +662,37 @@ void frameFunc()
 	if (CAVEgetbutton(CAVE_XKEY)) {
 		hodKouli();
 	}
+	if (CAVEgetbutton(CAVE_EKEY)) {
+		zmen_zbran();
+	}
+	if (CAVEgetbutton(CAVE_NKEY)) {
+		prepniSlunce();
+		prepniBaterku();
+	}
 
 	CAVENavTranslate(smerPohybu[0]*rychlost,smerPohybu[1]*rychlost,smerPohybu[2]*rychlost);
 	pozice += smerPohledu*rychlost;
 
 	CAVEDisplayBarrier();
   }
+
   if (CAVEMasterDisplay()) {
 	  Idle();
   }
+
   CAVEDisplayBarrier();
 }
 #endif
 
 void DisplayGL(void) {
 #if CAVEMOD
-  // do something and draw...
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
   if (walkmode) {
   	pozice[1] = vyska_postavy;
   }
 
-  // Camera transform
+  //transformace kamery
   CAVENavTransform();
 	
   if (slunceSviti) { //aktivace slunce
@@ -757,11 +757,11 @@ void DisplayGL(void) {
 	slunce();
   }
 
-  if (posvit) { //aktivace baterky
+  if (posvit) {		//aktivace baterky
 	baterka();
   }
 
-  if (zamlzeno) { //aktivace mlhy
+  if (zamlzeno) {	//aktivace mlhy
 	mlha();
   }
   
@@ -789,32 +789,32 @@ void DisplayGL(void) {
 
 void mySpecialKeyboard (int key, int x, int y) {
   switch (key) {
-	case GLUT_KEY_RIGHT: {// otoceni smeru pohledu doprava
+	case GLUT_KEY_RIGHT: {		// otoceni smeru pohledu doprava
 		walkmode = true;
 		doprava = true;
 		break;
 	}
-	case GLUT_KEY_LEFT: {// otoceni smeru pohledu doleva
+	case GLUT_KEY_LEFT: {		// otoceni smeru pohledu doleva
 		walkmode = true;
 		doleva = true;
 		break;
 	}
-	case GLUT_KEY_UP: { // krok vpred
+	case GLUT_KEY_UP: {			// krok vpred
 		walkmode = true;
 		dopredu = true;
 		break;
 	}
-	case GLUT_KEY_DOWN: { // krok vzad
+	case GLUT_KEY_DOWN: {		// krok vzad
 		walkmode = true;
 		dozadu = true;
 		break;
 	}
-	case GLUT_KEY_PAGE_UP: {// zvednuti smeru pohledu
+	case GLUT_KEY_PAGE_UP: {	// zvednuti smeru pohledu
 		walkmode = true;
 		nahoru = true;
 		break;
 	}
-	case GLUT_KEY_PAGE_DOWN: {// skloneni smeru pohledu
+	case GLUT_KEY_PAGE_DOWN: {	// skloneni smeru pohledu
 		walkmode = true;
 		dolu = true;
 	  break;
@@ -826,32 +826,32 @@ void mySpecialKeyboard (int key, int x, int y) {
 
 void mySpecialKeyboard2 (int key, int x, int y) {
   switch (key) {
-	case GLUT_KEY_RIGHT: {// otoceni smeru pohledu doprava
+	case GLUT_KEY_RIGHT: {		// otoceni smeru pohledu doprava
 		walkmode = true;
 		doprava = false;
 		break;
 	}
-	case GLUT_KEY_LEFT: {// otoceni smeru pohledu doleva
+	case GLUT_KEY_LEFT: {		// otoceni smeru pohledu doleva
 		walkmode = true;
 		doleva = false;
 		break;
 	}
-	case GLUT_KEY_UP: { // krok vpred
+	case GLUT_KEY_UP: {			// krok vpred
 		walkmode = true;
 		dopredu = false;
 		break;
 	}
-	case GLUT_KEY_DOWN: { // krok vzad
+	case GLUT_KEY_DOWN: {		// krok vzad
 		walkmode = true;
 		dozadu = false;
 		break;
 	}
-	case GLUT_KEY_PAGE_UP: {// zvednuti smeru pohledu
+	case GLUT_KEY_PAGE_UP: {	// zvednuti smeru pohledu
 		walkmode = true;
 		nahoru = false;
 		break;
 	}
-	case GLUT_KEY_PAGE_DOWN: {// skloneni smeru pohledu
+	case GLUT_KEY_PAGE_DOWN: {	// skloneni smeru pohledu
 		walkmode = true;
 		dolu = false;
 	  break;
@@ -865,7 +865,7 @@ void myKeyboard (unsigned char key, int x, int y) {
   switch (key) {
 	case'q':
 	case'Q':	
-    case 27:		/* pri stisku klavesy Esc se aplikace ukonci */      
+    case 27:					//ukonceni aplikace ESC nebo Q     
       exit (0);
       break;
 	case 'w': 
@@ -932,7 +932,7 @@ void myKeyboard2 (unsigned char key, int x, int y) {
   switch (key) {
 	case'q':
 	case'Q':	
-    case 27:		/* pri stisku klavesy Esc se aplikace ukonci */      
+    case 27:					//ukonceni aplikace ESC nebo Q      
       exit (0);
       break;
 	case 'w': 
@@ -952,27 +952,26 @@ void myKeyboard2 (unsigned char key, int x, int y) {
       break;
 	case 'd': 
 	case 'D':
-		walkmode=true;
+		walkmode = true;
 		doprava = false;
       break;
   }
 }
 
-
 void myMotion(int x, int y)	{
 	if (walkmode) {
-		xm[1]=WIDTH/2; //poloha mysi na stredu
+		xm[1]=WIDTH/2;		//poloha mysi na stredu
 		ym[1]=HEIGHT/2;
-		xm[0]=x; //aktuali poloha mysi
+		xm[0]=x;			//aktualni poloha mysi
 		ym[0]=y;
-		xm[2]=xm[0]-xm[1]; //rozdil v polohach
+		xm[2]=xm[0]-xm[1];	//rozdil v polohach
 		ym[2]=ym[0]-ym[1];
 
-		uhelPohledu += SMALL_ANGLE2*xm[2]/3; //pricteni rozdilu v x souradnici
+		uhelPohledu += SMALL_ANGLE2*xm[2]/3;				//pricteni rozdilu v x souradnici
 		if(uhelPohledu > 360.0) uhelPohledu -= 360.0;
 		if(uhelPohledu < -360.0) uhelPohledu += 360.0;
 
-		beta -= SMALL_ANGLE2*ym[2]/3; //odecteni rozdilu v y souradnici
+		beta -= SMALL_ANGLE2*ym[2]/3;						//odecteni rozdilu v y souradnici
 		if(beta > 75.0) beta = 75.0;
 		if(beta < -65.0) beta = -65.0;
 	}
@@ -991,21 +990,24 @@ void initWorld(void) {
 
 	rootNode_p = new CTransformNode(); // koren grafu sceny
 
+	//podstavec panelu
 CPodstavecNode * podstavec = new CPodstavecNode();
-	CTransformNode * podstavec2_p = new CTransformNode(); //PODSTAVEC PANELU
+	CTransformNode * podstavec2_p = new CTransformNode();
 	podstavec2_p->Translate(0.0, 0.5, -3.5);
 	podstavec2_p->Scale(1.0, 1.0, 0.2);
 	podstavec2_p->AddChildNode(podstavec);
 	rootNode_p->AddChildNode(podstavec2_p);
 
-	CTransformNode * podstavec3_p = new CTransformNode(); //PANEL
+	//panel
+	CTransformNode * podstavec3_p = new CTransformNode();
 	podstavec3_p->Translate(0.0, 1.0, -3.5);
 	podstavec3_p->Rotate(45, 1.0, 0.0, 0.0);
 	podstavec3_p->Scale(PANEL_SIZE_Y, 0.2, 0.5*PANEL_SIZE_X);
 	podstavec3_p->AddChildNode(podstavec);
 	rootNode_p->AddChildNode(podstavec3_p);
 
-CPanelNode * panel = new CPanelNode(); // OBRAZOVKA INFORMACNIHO PANELU
+	//obrazovka infromaceniho panelu
+CPanelNode * panel = new CPanelNode();
 	CTransformNode * panel_p = new CTransformNode();
 	panel_p->Translate(0.0, 0.72, -3.07);
 	panel_p->Rotate(-45, 1.0, 0.0, 0.0);
@@ -1013,6 +1015,7 @@ CPanelNode * panel = new CPanelNode(); // OBRAZOVKA INFORMACNIHO PANELU
 	panel_p->AddChildNode(panel);
 	rootNode_p->AddChildNode(panel_p);
 
+	//lavicky
 COBJNode *bench = new COBJNode();
 	bench->Load(BENCH_FILE_NAME);
 
@@ -1037,6 +1040,7 @@ COBJNode *bench = new COBJNode();
 	bench3_p->AddChildNode(bench);
 	rootNode_p->AddChildNode(bench3_p);
 
+	//stromy
 COBJNode *strom = new COBJNode();
 	strom->Load(STROM_FILE_NAME);
 
@@ -1072,17 +1076,20 @@ COBJNode *strom = new COBJNode();
 	rootNode_p->AddChildNode(strom_p5);
 
 
+	//zeme
 CZemeNode * zeme = new CZemeNode();
 	CTransformNode * zeme_p = new CTransformNode();
 	zeme_p->AddChildNode(zeme);
 	rootNode_p->AddChildNode(zeme_p);
 
+	//skybox
 CSkyboxNode * skybox = new CSkyboxNode();
 	CTransformNode * skybox_p = new CTransformNode();
 	skybox_p->Translate(0.0, -12.0, 0.0);
 	skybox_p->AddChildNode(skybox);
 	rootNode_p->AddChildNode(skybox_p);
 
+	//snehulaci
 CSnehulakNode * sneh = new CSnehulakNode();
 	sneh->sn = &snehulaci[0];
 	
@@ -1113,6 +1120,7 @@ CSnehulakNode * sneh3 = new CSnehulakNode();
 	sneh_p3->Rotate(10.0, 0.0, 1.0, 0.0);
 	rootNode_p->AddChildNode(sneh_p3);
 
+	//skore
 CScoreNode *score = new CScoreNode();
 	CTransformNode * score_p1 = new CTransformNode();
 	score_p1->Translate(-WORLD_SIZE_2+1, WORLD_HEIGHT/4, 7);
@@ -1144,56 +1152,56 @@ CScoreNode *score = new CScoreNode();
 
 // ostatni inicializace
 void initOther(void){
+	smerPohledu[0] = cos(uhelPohledu*DEG_TO_RAD)*cos(beta*DEG_TO_RAD);
+	smerPohledu[1] = sin(beta*DEG_TO_RAD);
+	smerPohledu[2] = sin(uhelPohledu*DEG_TO_RAD)*cos(beta*DEG_TO_RAD);
 
-	  smerPohledu[0] = cos(uhelPohledu*DEG_TO_RAD)*cos(beta*DEG_TO_RAD);
-	  smerPohledu[1] = sin(beta*DEG_TO_RAD);
-	  smerPohledu[2] = sin(uhelPohledu*DEG_TO_RAD)*cos(beta*DEG_TO_RAD);
+	smerPohybu[0] = cos(uhelPohledu*DEG_TO_RAD);
+	smerPohybu[1] = 0.0;
+	smerPohybu[2] = sin(uhelPohledu*DEG_TO_RAD);
 
-	  smerPohybu[0] = cos(uhelPohledu*DEG_TO_RAD);
-	  smerPohybu[1] = 0.0;
-	  smerPohybu[2] = sin(uhelPohledu*DEG_TO_RAD);
-
-	  GLdouble upVector[3];
-	  upVector[0] = -cos(uhelPohledu*DEG_TO_RAD)*sin(beta*DEG_TO_RAD);
-	  upVector[1] = cos(beta*DEG_TO_RAD);
-	  upVector[2] = -sin(uhelPohledu*DEG_TO_RAD)*sin(beta*DEG_TO_RAD);
+	GLdouble upVector[3];
+	upVector[0] = -cos(uhelPohledu*DEG_TO_RAD)*sin(beta*DEG_TO_RAD);
+	upVector[1] = cos(beta*DEG_TO_RAD);
+	upVector[2] = -sin(uhelPohledu*DEG_TO_RAD)*sin(beta*DEG_TO_RAD);
 
 	glEnable(GL_LIGHT0);
 	initTextures();
 	rotMatrix.LoadIdentityMatrix();
 #if !CAVEMOD
-	glutSetCursor(GLUT_CURSOR_NONE); //skryje kurzor
-	glutWarpPointer(WIDTH/2,HEIGHT/2); //nastavi kurzor na stred okna
+	glutSetCursor(GLUT_CURSOR_NONE);	//skryje kurzor
+	glutWarpPointer(WIDTH/2,HEIGHT/2);	//nastavi kurzor na stred okna
 #endif
 }
+
 //prirazeni akci k jednotlivym polozkam
 void myMenu(int polozkaMenu){ 
   switch(polozkaMenu) {
-	case 1: //umisti pozorovatele na prvni staticke stanoviste
+	case 1:					//umisti pozorovatele na prvni staticke stanoviste
 		statickyPohled1();
 		break;
-	case 2: //umisti pozorovatele na druhe staticke stanoviste
+	case 2:					//umisti pozorovatele na druhe staticke stanoviste
 		statickyPohled2();		
 		break;
-    case 3: //walk mode
+    case 3:					//walk mode
 		prepniWalkmode();
       break;
-	case 11:  //zapne nebo vypne baterku
+	case 11:				//zapne nebo vypne baterku
 		prepniBaterku();
       break;
-    case 12:  //zapne nebo vypne slunce
+    case 12:				//zapne nebo vypne slunce
 		prepniSlunce();
       break;
-    case 21:  //zapne nebo vypne slunce
+    case 21:				//zapne nebo vypne slunce
 		prepniMlhu();
       break;
-	case 22:  //zapne nebo vypne snezeni
+	case 22:				//zapne nebo vypne snezeni
 		snezi = !snezi;
       break;
-	case 23:  //zapne nebo vypne snezeni
+	case 23:				//zapne nebo vypne snezeni
 		pause2 = !pause2;
       break;
-    case 99: //ukonci aplikaci
+    case 99:				//ukonci aplikaci
       exit(0);
       break;
   }
@@ -1242,12 +1250,11 @@ void InitGL(void) {
   glEnable(GL_LIGHTING); //zapne osvetleni
 
 #if CAVEMOD
-  if (CAVEMasterDisplay()) {
+	if (CAVEMasterDisplay()) {
 	  initWorld();
-  }
+	}
 #endif
 	initOther();
-
 }
 
 int main(int argc, char **argv) {
@@ -1255,16 +1262,10 @@ int main(int argc, char **argv) {
   timer.Reset();
   timer.Start();
 #if CAVEMOD
-  // compile for CAVE
-	// init world
-  //TODO: is it ok to init textures here????
-
-
 	CAVEConfigure(&argc,argv,NULL);
 	CAVEInitApplication((CAVECALLBACK)InitGL,0);
 	CAVEDisplay((CAVECALLBACK)DisplayGL,0);
 
-// zavola se jednou pro vsechny vlakna, nebo jednou pro kazde vlakno?????
 	CAVEFrameFunction((CAVECALLBACK)frameFunc,0);
 	CAVEInit();
 	CAVENavTranslate(0.0,-6.0+vyska_postavy,0.0);
@@ -1275,16 +1276,12 @@ int main(int argc, char **argv) {
 	}
  	if (CAVEDistribMaster()) 
 		while (!CAVEgetbutton(CAVE_ESCKEY)) {
-			// catch inputs
-				
-			// update all - or in FRAME_FUNCTION????!!!!
-				//Idle();
 			CAVEUSleep(10);
 		}
 	else while (!CAVESync->Quit) CAVEUSleep(15);
 	std::cout<< "Cleaning up." << std::endl;
 	if (CAVEMasterDisplay()){
-		// open connection
+		// close connection
 		CAVEDistribCloseConnection(123);
 	}
 	
