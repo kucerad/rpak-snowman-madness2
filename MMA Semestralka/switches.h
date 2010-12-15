@@ -16,5 +16,19 @@ bool pause2 = false;			//zastavuje update vsech objektu
 float rychlost = 0;
 CMatrix rotMatrix;
 
+// stav tlacitek v minulem kroku
+bool b0 = false;
+bool b1 = false;
+bool b2 = false;
+bool b3 = false;
+bool b4 = false;
+bool b5 = false;
+bool b6 = false;
+bool b7 = false;
+
+int zbran = 0;
+
+float velikost_koule0 = 0.5;
+float velikost_koule1 = 0.17;
 
 #endif // __SWITCHES_H

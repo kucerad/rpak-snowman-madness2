@@ -5,7 +5,7 @@
 
 class Koule {
 public:
-	Koule(CVector3D _pos, CVector3D _smer, double _rychlost, double _polomer) {
+	Koule(CVector3D _pos, CVector3D _smer, double _rychlost, double _polomer, int _barva=16) {
 		pozice = _pos;
 		smerPohybu = _smer;
 		polomer = _polomer;
@@ -13,14 +13,16 @@ public:
 		rychlost*= _rychlost*1000;
 		obsah = 3.1415*polomer*polomer/100;
 		hmotnost = 0.5;// 4/3 * 3.1415 * polomer*polomer*polomer * 0.001;
+		barva = _barva;
+
 	}
 
 	//vykresli vrzenou kouli
 	void vykreslit(void) {
-		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[barva_koule]);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[barva_koule]);
-		glMaterialfv(GL_FRONT, GL_SPECULAR, specular[barva_koule]);
-		glMaterialf(GL_FRONT, GL_SHININESS, shininess[barva_koule]);
+		glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[barva]);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[barva]);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, specular[barva]);
+		glMaterialf(GL_FRONT, GL_SHININESS, shininess[barva]);
 
 		glPushMatrix();
 		glEnable(GL_LIGHTING);
@@ -102,6 +104,7 @@ public:
 
 	CVector3D rychlost, pozice, smerPohybu;
 	double hmotnost, obsah, polomer;
+	int barva;
 };
 
 
