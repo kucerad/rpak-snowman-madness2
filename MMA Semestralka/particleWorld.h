@@ -22,7 +22,7 @@ public:
 		printf("PWorld: [\n");
 		for (unsigned int i=0; i<particles.size(); i++){
 			printf("\t");
-			particles[i].printOut();
+			particles[i]->printOut();
 		}
 		printf("]\n");
 	}
@@ -49,26 +49,26 @@ public:
 	//vykresli vsechny castice
 	void draw(void){
 		for (int i=particles.size()-1; i>0; i--){
-			particles[i].draw();
+			particles[i]->draw();
 		}
 	}
 
 	//update vsech castic
-	void update(double time){
+	void update(double dt){
 		for (unsigned int i=0; i<particles.size(); i++){
-			if (particles[i].jeVenku()){ 
+			if (particles[i]->outTest()){ 
 				//odstraneni castic, ktere opustily scenu
 				particles.erase(particles.begin()+i, particles.begin()+i+1);
 				i--;
 				continue;
 			} 
-			particles[i].update(time);
+			particles[i]->update(dt);
 		}
 	}
 
 	vec position;
 	ParticleGenerator * generator;
-	std::vector<Particle> particles;
+	std::vector<Particle*> particles;
 };
 
 #endif

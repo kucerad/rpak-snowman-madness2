@@ -3,82 +3,93 @@
 #include "Vector.h"
 #include "physics.h"
 
-
-// show normals and forces... DEBUG = 1
-#define DEBUG 1
-
 typedef CVector3D vec;
-
 
 class Particle{
 public:
-	Particle(vec _position, vec _speed, vec _axis, double _angle, vec _normal, double _aspeed, double _lTime, double _mass=5, double _size=0.5, double _life=5000, double _rot=0):
-	  position(_position),
-	  speed(_speed),
-	  axis(_axis),
-	  angle(_angle),
-	  normal(Normalize(_normal)),
-	  aspeed(_aspeed),
-	  mass(_mass),
-	  size(_size),
-	  life(_life),
-	  rotDiff(_rot),
-	  lTime(_lTime){
-
-	  transf.LoadIdentityMatrix();
-	  transf.Rotate(_axis[X], _axis[Y], _axis[Z], _angle);
-	  normal = transf * Normalize(_normal);
-	  timeElapsed = 0;
+	/* konstruktor */
+	Particle(vec _pos, vec _speed, vec _axis, double _angle, vec _normal, double _mass=1, double _size=1, double _lifetime=100):
+		position(_pos),
+		speed(_speed),
+		axis(_axis),
+		mass(_mass),
+		size(_size),
+		lifetime(_lifetime)
+	{
+		transf.LoadIdentityMatrix();
+		transf.Rotate(_axis[X], _axis[Y], _axis[Z], _angle);
+		normal = transf * Normalize(_normal);
+		timeElapsed = 0;
 	}
 
+	/* destruktor */
 	~Particle(){};
 
 	vec			position;
 	vec			speed;
 	vec			axis;
 	vec			normal;
-	double		aspeed;
 	double		mass;
 	double		size;
-	double		life;
-	double		angle;
-	double		rotDiff;
-	double		lTime;
-	CMatrix		diffTransf;
+	double		lifetime;
 	CMatrix		transf;
-	vec			Fn;
-	vec			Ft;
-	vec			S;
-	vec			Nspeed;
-	vec			Tspeed;
 	double		timeElapsed;
 
 	//vypis parametru castice
 	void printOut(void){
-		printf("P[%f, %f, %f] speed[%f, %f, %f]\n", position[X], position[Y], position[Z], speed[X], speed[Y], speed[Z]);
+		printf("pos[%f, %f, %f] speed[%f, %f, %f]\n", position[X], position[Y], position[Z], speed[X], speed[Y], speed[Z]);
 	}
-
-	//kontrola, zda castice opustila scenu
-	bool jeVenku(void) {
-		if (position[0] < WORLD_SIZE_2 && position[0] > -WORLD_SIZE_2 && position[2] < WORLD_SIZE_2 && position[2] > -WORLD_SIZE_2 && position[1] > 0) {
+	// hlidani na opusteni sceny
+	bool outTest(void) {
+		if (position[X] < WORLD_SIZE_2 && position[X] > -WORLD_SIZE_2 && position[Z] < WORLD_SIZE_2 && position[Z] > -WORLD_SIZE_2 && position[Y] > 0) {
 			return false;
 		}
 		else {
 			return true;	
 		}
 	}
+	// je castice ziva?
+	bool isAlive(){
+		if (timeElapsed>lifetime){
+			return false;
+		}
+		return true;
+	}
+	virtual void update(double dt)=0{
+		
+	};
+	virtual void draw()=0{
+		
+	};
+
+};
+
+class SnowParticle:  public Particle {
+  public:
+	SnowParticle(vec _position, vec _speed, vec _axis, double _angle, vec _normal, double _mass=5, double _size=0.5f, double _lifetime=5000):
+	  Particle(_position, _speed, _axis, _angle, _normal, _mass, _size, _lifetime)
+	  {}
+	
+
+	~SnowParticle(){};
+
+	CMatrix		diffTransf;
+	vec			Fn;
+	vec			Ft;
+	vec			S;
+	vec			Nspeed;
+	vec			Tspeed;
 
 	//vypocet parametru castice v dalsim kroku
-	void update(double time){
+	virtual void update(double dt){
+		dt*=0.1;
 		diffTransf.LoadIdentityMatrix();
-		double tDiff = dt;
-		lTime = time;
-		timeElapsed += tDiff;
-		if (life<0){
+		timeElapsed += dt;
+		/*
+		if (life<timeElapsed){
 			return;
 		}
-		life--;
-
+		*/
 		// celkova rychlost v prostredi
 		S = vec( -VITR + speed );
 		
@@ -98,7 +109,7 @@ public:
 		speed += (GRAVITACE + Fn + Ft)/mass;
 		// posun
 		
-		position += speed*(tDiff);
+		position += speed*(dt);
 
 		// natocit a update normaly
 		double speedScale = Length(speed);
@@ -118,10 +129,12 @@ public:
 	}
 
 	//vykresli castici
-	void draw(void){
-		if (life<0){
+	virtual void draw(void){
+		/*
+		if (lifetime<timeElapsed){
 			return;
 		}
+		*/
 		double s2(size/2);
 		double s3(size/4);
 
@@ -208,5 +221,92 @@ public:
 
 };
 
+
+/* PUFF particle
+*/
+class PuffParticle:  public Particle {
+  public:
+	PuffParticle(vec _position, vec _speed, vec _axis, double _angle, vec _normal, double _mass=5, double _size=0.5f, double _lifetime=5000):
+	  Particle(_position, _speed, _axis, _angle, _normal, _mass, _size, _lifetime)
+	  {}
+	
+
+	~PuffParticle(){};
+
+	CMatrix		diffTransf;
+	vec			S;
+
+
+	//vypocet parametru castice v dalsim kroku
+	virtual void update(double dt){
+		dt*=0.1;
+		diffTransf.LoadIdentityMatrix();
+		timeElapsed += dt;
+		/*
+		if (life<timeElapsed){
+			return;
+		}
+		*/
+		speed += (GRAVITACE)/mass;
+		position+=speed*dt*0.05;
+		/*		
+		
+		diffTransf.Rotate(normal[X], normal[Y], normal[Z], 0.1*speedScale);
+		diffTransf.Rotate(axis[X], axis[Y], axis[Z], angleDiff);
+		
+		normal = Normalize(diffTransf * normal);
+		axis = Normalize(diffTransf * axis);
+		transf = diffTransf*transf;
+		*/
+	}
+
+	//vykresli castici
+	virtual void draw(void){
+		/*
+		if (lifetime<timeElapsed){
+			return;
+		}
+		*/
+		double s2(size/2);
+		//double s3(size/4);
+
+		glPushMatrix();
+		
+			//glEnable(GL_LIGHTING);				
+			glTranslated(position[X],position[Y],position[Z]);			
+			//glRotated(angle, axis[X], axis[Y], axis[Z]);
+				
+				glMultMatrixd(transf._matrix);
+				
+				glColor3f(0.5f,0.5f, 1.f);		
+				//glEnable(GL_LIGHTING);
+				glEnable(GL_TEXTURE_2D);
+				// povoleni michani barev
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_SRC_ALPHA);
+				glBindTexture(GL_TEXTURE_2D, textureIDs[10]);
+				glBegin(GL_QUADS);
+				  glTexCoord2f(0.0, 0.0);
+				  glVertex3d(-s2, 0.0, -s2);
+  				  
+				  glTexCoord2f(1.0, 0.0);
+				  glVertex3d(s2, 0.0, -s2);
+				  
+				  glTexCoord2f(1.0, 1.0);
+				  glVertex3d(s2, 0.0, s2);
+				  
+				  glTexCoord2f(0.0, 1.0);
+				  glVertex3d(-s2, 0.0, s2);
+				glEnd();
+
+				glDisable(GL_BLEND);
+				glDisable(GL_TEXTURE_2D);
+			
+			//glDisable(GL_LIGHTING);
+	
+		glPopMatrix();
+	}
+
+};
 
 #endif __PARTICLE
