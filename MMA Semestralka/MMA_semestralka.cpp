@@ -634,8 +634,8 @@ void Idle(void) {
 			  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
 				// vygeneruje castice v miste zasahu...			 
 			  pGen.position = k.pozice;
-			  pGen.position[Y]=0.2;
-			  pWorld.add(100);
+			  pGen.position[Y]=0.5;
+			  pWorld.add(200);
 		  
 		  }
 		  else if (snehoveKoule[i].jeVenku()) { //pokud opusti scenu
