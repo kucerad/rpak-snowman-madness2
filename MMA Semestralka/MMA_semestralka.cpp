@@ -23,7 +23,10 @@ GLuint textureIDs[10];
 #include "particleWorld.h"
 #include "ParticleGenerator.h"
 #include <time.h>
-ParticleGenerator	pGen(vec(0,5,2), vec(0,1,0));
+//ParticleGenerator	pGen(vec(0,5,2), vec(0,1,0));
+SnowflagGenerator	sGen(vec(0,5,2), vec(0,1,0));
+ParticleWorld		sWorld(&sGen);
+SnowpuffGenerator	pGen(vec(0,5,2), vec(0,1,0));
 ParticleWorld		pWorld(&pGen);
 
 #include "Snehulak.h"
@@ -564,8 +567,6 @@ void Reshape(int w, int h) {
 // update sceny
 void Idle(void) {
 #if CAVEMOD
-
-
 // synchronizace nahodneho generovani cisel - funkce random
 	if (CAVEMasterDisplay()){
 		// once on each distributed machine
@@ -582,7 +583,7 @@ void Idle(void) {
 		srand(randseed);
 		static float prevtime = 0;
 		float t = CAVEGetTime();
-		float dt = t - prevtime;
+		dt = t - prevtime;
 		prevtime=t;
 		if (CAVEDistribMaster()){
 			// server
@@ -591,9 +592,12 @@ void Idle(void) {
 					// client
 			CAVEDistribRead(123, &dt, sizeof(dt));
 		}
-
-
-
+#else
+	// zjistit dt...
+	static float prevtime = 0;
+	float t = timer.RealTime();
+	dt = t - prevtime;
+	prevtime=t;
 #endif
 
 	if (!pause2) {
@@ -611,10 +615,12 @@ void Idle(void) {
 
 		if (snezi) {
 			//pokud snezi, jsou pridany nove vlocky
-			pWorld.addRandom(5);
+			sWorld.addRandom(2);
 			//aktualizace particlu
-			pWorld.update(timer.RealTime());
+			sWorld.update(dt);
 		}
+		// explosions...
+		pWorld.update(dt);
 
 		//vypis poctu particlu ve scene
 		//std::cout << pWorld.particles.size() <<"\n";
@@ -626,6 +632,11 @@ void Idle(void) {
 			  Koule k(snehoveKoule[i].pozice, snehoveKoule[i].smerPohybu, 0, velikost_zabiteho/2);
 			  kolize.push_back(k);
 			  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
+				// vygeneruje castice v miste zasahu...			 
+			  pGen.position = k.pozice;
+			  pGen.position[Y]=0.2;
+			  pWorld.add(100);
+		  
 		  }
 		  else if (snehoveKoule[i].jeVenku()) { //pokud opusti scenu
 			  snehoveKoule.erase(snehoveKoule.begin()+i,snehoveKoule.begin()+i+1);
@@ -666,7 +677,7 @@ void frameFunc()
 	//std::cout << "X: " << (CAVEgetbutton(CAVE_XKEY)?"O":"X") << std::endl;
 	/*static float prevtime = 0;
 	float t = CAVEGetTime();
-	float dt = t - prevtime;
+	dt = t - prevtime;
 	prevtime=t;
 	dt =0.05f;*/
 	float jx = CAVE_JOYSTICK_X;
@@ -857,8 +868,10 @@ void DisplayGL(void) {
 
   //vykresleni vsech vlocek
   if (snezi) {
-	  pWorld.draw();
+	  sWorld.draw();
   }
+  // vykresleni vybuchu po zasahu
+  pWorld.draw();
   
   glutSwapBuffers(); 
 #endif

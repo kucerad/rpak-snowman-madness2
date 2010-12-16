@@ -71,7 +71,7 @@ public:
 		double r = Length(rychlost);
 		CVector3D odpor = Normalize(rychlost) * (-0.5* r*obsah*KOEF_ODPORU*HUSTOTA_PROSTREDI);
 		rychlost += (-odpor+GRAVITACE)/hmotnost;
-		pozice+=rychlost*dt;
+		pozice+=rychlost*dt*0.05;
 	} 
 
 	//kontrola, zda vrzena koule opustila skybox
