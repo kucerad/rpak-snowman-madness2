@@ -18,7 +18,7 @@
 #include "switches.h"
 
 //id textur
-GLuint textureIDs[10];
+GLuint textureIDs[11];
 
 #include "particleWorld.h"
 #include "ParticleGenerator.h"
@@ -165,7 +165,10 @@ void initTextures() {
 	if (textureLoader->Load("data/snowflake.tga", image) != false) {
 		setTexture(textureIDs[10], image);
 	}
-
+	//textura vlocky
+	if (textureLoader->Load("data/snowflake2.tga", image) != false) {
+		setTexture(textureIDs[11], image);
+	}
   delete image;
   delete textureLoader;
 }
@@ -301,10 +304,10 @@ void kresliPlochu(void) {
 //kresli podstavu pro informacni panel
 void kresliPodstavu(void) {
 	glEnable(GL_LIGHTING);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[9]);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[9]);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specular[9]);
-	glMaterialf(GL_FRONT, GL_SHININESS, shininess[9]);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient[8]);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse[8]);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specular[8]);
+	glMaterialf(GL_FRONT, GL_SHININESS, shininess[8]);
 	glColor3f(1.0,1.0,1.0);
 	glutSolidCube(1.0);
 	glDisable(GL_LIGHTING);
