@@ -1285,6 +1285,9 @@ void myMenu(int polozkaMenu){
     case 12:				//zapne nebo vypne slunce
 		prepniSlunce();
       break;
+	case 20:				//zmeni zbran
+		zmen_zbran();
+      break;
     case 21:				//zapne nebo vypne slunce
 		prepniMlhu();
       break;
@@ -1326,9 +1329,10 @@ void menu(void) {
 	glutCreateMenu(myMenu);
 	glutAddSubMenu("Kamera", menuKamera);
 	glutAddSubMenu("Svetla", menuSvetla);
+	glutAddMenuEntry("Zmenit zbran (e)", 20); 
 	glutAddMenuEntry("Mlha ON/OFF (m)", 21); 
-	glutAddMenuEntry("Snezeni ON/OFF (m)", 22); 
-	glutAddMenuEntry("Pause ON/OFF (m)", 23); 
+	glutAddMenuEntry("Snezeni ON/OFF (o)", 22); 
+	glutAddMenuEntry("Pause ON/OFF (p)", 23); 
 	glutAddMenuEntry("Konec", 99);
 
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
