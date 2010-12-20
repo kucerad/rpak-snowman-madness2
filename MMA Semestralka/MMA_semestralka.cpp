@@ -18,7 +18,7 @@
 #include "switches.h"
 
 //id textur
-GLuint textureIDs[11];
+GLuint textureIDs[12];
 
 #include "particleWorld.h"
 #include "ParticleGenerator.h"
@@ -125,7 +125,7 @@ void setTexture(GLuint ID, CImage* image) {
 void initTextures() {
  CTextureLoader *textureLoader = new CTextureLoader();
  CImage *image = new CImage();
-	glGenTextures(11, textureIDs);
+	glGenTextures(12, textureIDs);
 
 	//skybox
 	if (textureLoader->Load("data/iceflow_front.tga", image) != false) {
@@ -618,7 +618,7 @@ void Idle(void) {
 
 		if (snezi) {
 			//pokud snezi, jsou pridany nove vlocky
-			sWorld.addRandom(2);
+			sWorld.addRandom(3);
 			//aktualizace particlu
 			sWorld.update(dt);
 		}
@@ -813,8 +813,9 @@ void DisplayGL(void) {
 
   //vykresleni vsech vlocek
   if (snezi) {
-	  pWorld.draw();
+	  sWorld.draw();
   }
+  pWorld.draw();
 #else
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_MODELVIEW);
