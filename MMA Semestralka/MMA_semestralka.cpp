@@ -618,7 +618,7 @@ void Idle(void) {
 
 		if (snezi) {
 			//pokud snezi, jsou pridany nove vlocky
-			sWorld.addRandom(3);
+			sWorld.addRandom(2);
 			//aktualizace particlu
 			sWorld.update(dt);
 		}
